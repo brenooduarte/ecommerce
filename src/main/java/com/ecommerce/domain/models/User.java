@@ -3,6 +3,8 @@ package com.ecommerce.domain.models;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.Set;
+
 @Entity
 @Data
 @Table(name = "tb_user")
@@ -21,5 +23,8 @@ public class User {
     @Column
     private String password;
 
+    @Column
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<Address> address;
 
 }
