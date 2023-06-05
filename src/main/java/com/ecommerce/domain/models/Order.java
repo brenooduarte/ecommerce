@@ -13,10 +13,10 @@ import java.util.List;
 
 @Entity
 @Data
+@Table(name = "tb_order")
 @NoArgsConstructor
 public class Order {
 
-    @EqualsAndHashCode.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -41,6 +41,9 @@ public class Order {
     @Column(name = "delivery_date")
     private Date deliveryDate;
 
+    @Column(name = "delivery_address")
+    private Address deliveryAddress;
+
     @ManyToOne
     @JoinColumn(name = "user_customer_id", nullable = false)
     private User customer;
@@ -49,7 +52,7 @@ public class Order {
     @Column(name = "status_order", nullable = false)
     private StatusOrder statusOrder;
 
-    @OneToMany(mappedBy = "order")
+    @OneToMany
     private List<ProductOrder> items = new ArrayList<>();
 
     public Order(Date creationDate, StatusOrder status) {
