@@ -6,13 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ecommerce.domain.models.User;
-
-import io.swagger.annotations.Api;
-
 @RestController
 @RequestMapping("/test")
-@Api
 public class ConfigController {
 
 	@GetMapping
