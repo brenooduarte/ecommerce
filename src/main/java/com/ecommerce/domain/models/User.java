@@ -1,9 +1,16 @@
 package com.ecommerce.domain.models;
 
-import jakarta.persistence.*;
-import lombok.Data;
+import java.util.List;
 
-import java.util.Set;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.Data;
 
 @Entity
 @Data
@@ -23,8 +30,7 @@ public class User {
     @Column
     private String password;
 
-    @Column
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Set<Address> address;
+    private List<UserAddress> address;
 
 }

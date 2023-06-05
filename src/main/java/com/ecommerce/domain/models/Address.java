@@ -1,8 +1,12 @@
 package com.ecommerce.domain.models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Data;
-import org.hibernate.annotations.JdbcTypeCode;
 
 @Entity
 @Data
@@ -13,27 +17,24 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "cep_address")
+    @Column
     private String cep;
 
-    @Column(name = "street_address")
+    @Column
     private String street;
 
-    @Column(name = "number_address")
+    @Column
     private String number;
 
-    @Column(name = "additional_address")
+    @Column
     private String additional;
 
-    @Column(name = "neighborhood_address")
+    @Column
     private String neighborhood;
 
+    //TODO Adicionar mapeamento
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "city_address_id")
 //    private City city;
-
-    @ManyToOne
-    @JoinColumn(name = "user_address_id")
-    private User user;
 
 }

@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Entity
 @Data
+@Table(name = "tb_user_address")
 public class UserAddress {
 
     @Id
@@ -12,11 +13,11 @@ public class UserAddress {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "tb_user")
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "address_id")
+    @JoinColumn(name = "tb_address")
     private Address address;
 
     private String addressType;

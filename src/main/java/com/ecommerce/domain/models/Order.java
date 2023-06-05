@@ -41,8 +41,9 @@ public class Order {
     @Column(name = "delivery_date")
     private Date deliveryDate;
 
-    @Column(name = "delivery_address")
-    private Address deliveryAddress;
+    //TODO Ajustar mapeamento
+//    @Column(name = "delivery_address")
+//    private Address deliveryAddress;
 
     @ManyToOne
     @JoinColumn(name = "user_customer_id", nullable = false)
