@@ -1,4 +1,4 @@
-package com.api.ecommerce.exceptions;
+package com.ecommerce.domain.exceptions;
 
 public class ProductAlreadyExistsException extends Exception{
 

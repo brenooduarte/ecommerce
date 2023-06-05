@@ -1,6 +1,6 @@
-package com.api.ecommerce.repository;
+package com.ecommerce.domain.repository;
 
-import com.api.ecommerce.models.User;
+import com.ecommerce.domain.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 @Repository

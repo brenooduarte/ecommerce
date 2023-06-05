@@ -1,9 +1,8 @@
-package com.api.ecommerce.service;
+package com.ecommerce.domain.service;
 
-import com.api.ecommerce.exceptions.ProductAlreadyExistsException;
-import com.api.ecommerce.exceptions.UserAlreadyExistsException;
-import com.api.ecommerce.models.Product;
-import com.api.ecommerce.repository.ProductRepository;
+import com.ecommerce.domain.models.Product;
+import com.ecommerce.domain.exceptions.ProductAlreadyExistsException;
+import com.ecommerce.domain.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
