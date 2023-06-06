@@ -14,10 +14,10 @@ public class City {
     private Long id;
 
     @Column(nullable = false)
-    private String nome;
+    private String name;
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private State estado;
+    private State state;
 
 }
