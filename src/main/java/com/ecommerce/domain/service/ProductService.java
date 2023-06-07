@@ -6,6 +6,7 @@ import com.ecommerce.domain.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -19,7 +20,13 @@ public class ProductService {
         Optional<Product> userOptional = productRepository.findById(id);
         return userOptional.orElse(null);
     }
-
+    
+    
+//    public List<Product> listAllActive() {
+//    	List<Product> returnList = productRepository.listAllActive();
+//        return returnList;
+//    }
+    
 
     public Product createProduct(Product product) throws ProductAlreadyExistsException {
         if (product == null) {

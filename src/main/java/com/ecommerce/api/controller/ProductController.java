@@ -37,6 +37,11 @@ public class ProductController {
         return product.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
 
     }
+    
+    @GetMapping("/active")
+    public ResponseEntity<List<Product>> listAllActive() {
+        return new ResponseEntity<List<Product>>(productRepository.listAllActive(), HttpStatus.OK);
+    }
 
     @PostMapping
     public ResponseEntity<?> add(@RequestBody Product product) {

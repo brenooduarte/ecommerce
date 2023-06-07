@@ -26,9 +26,6 @@ public class Product {
     @Column
     private String image;
 
-    @Column(nullable = false)
-    private boolean active;
-
     @Column
     private boolean highlight;
 
@@ -40,5 +37,12 @@ public class Product {
 
     @Column
     private int sold;
+    
+    private boolean active;
+    
+    @PrePersist
+    public void prePersist() {
+    	setActive(true);
+    }
 
 }
