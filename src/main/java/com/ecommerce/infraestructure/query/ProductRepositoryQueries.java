@@ -1,4 +1,4 @@
-package com.ecommerce.infraestructure;
+package com.ecommerce.infraestructure.query;
 
 import java.util.List;
 

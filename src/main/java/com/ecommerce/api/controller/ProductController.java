@@ -1,5 +1,6 @@
 package com.ecommerce.api.controller;
 
+import com.ecommerce.domain.dto.view.ProductDTOView;
 import com.ecommerce.domain.exceptions.EntityInUseException;
 import com.ecommerce.domain.models.Product;
 import com.ecommerce.domain.repository.ProductRepository;
@@ -39,8 +40,8 @@ public class ProductController {
     }
     
     @GetMapping("/active")
-    public ResponseEntity<List<Product>> listAllActive() {
-        return new ResponseEntity<List<Product>>(productRepository.listAllActive(), HttpStatus.OK);
+    public ResponseEntity<List<ProductDTOView>> listAllActive() {
+        return new ResponseEntity<List<ProductDTOView>>(productService.listAllActive(), HttpStatus.OK);
     }
 
     @PostMapping

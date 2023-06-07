@@ -5,6 +5,8 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 
+import com.ecommerce.utils.GlobalConstants;
+
 @Entity
 @Data
 @Table(name = "tb_product")
@@ -38,11 +40,11 @@ public class Product {
     @Column
     private int sold;
     
-    private boolean active;
+    private boolean status;
     
     @PrePersist
     public void prePersist() {
-    	setActive(true);
+    	setStatus(GlobalConstants.ACTIVE);
     }
 
 }
