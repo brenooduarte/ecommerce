@@ -1,51 +1,44 @@
 package com.ecommerce.domain.service;
 
-import com.ecommerce.domain.dto.form.OrderDTOForm;
-import com.ecommerce.domain.models.Order;
-import com.ecommerce.domain.models.Product;
-import com.ecommerce.domain.models.ProductOrder;
-import com.ecommerce.domain.repository.OrderRepository;
-import com.ecommerce.domain.repository.ProductOrderRepository;
+import java.math.BigDecimal;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
+import com.ecommerce.domain.dto.form.OrderDTOForm;
+import com.ecommerce.domain.models.Order;
+import com.ecommerce.domain.models.Product;
+import com.ecommerce.domain.repository.OrderRepository;
 
 @Service
 public class OrderService {
 
-    @Autowired
-    private OrderRepository orderRepository;
+	@Autowired
+	private OrderRepository orderRepository;
 
-    @Autowired
-    private ProductOrderRepository productOrderRepository;
+	public void createOrder(OrderDTOForm orderDTOForm) {
 
-    public void createOrder(OrderDTOForm orderDTOForm) {
+		Order order = new Order();
+		BeanUtils.copyProperties(orderDTOForm, order);
 
-        Order order = new Order();
-        BeanUtils.copyProperties(orderDTOForm, order);
+		BigDecimal subtotal = BigDecimal.ZERO;
 
-        BigDecimal subtotal = BigDecimal.ZERO;
+		// TODO: Calculate freight charge
+		BigDecimal freightCharge = BigDecimal.valueOf(100);
 
-        //TODO: Calculate freight charge
-        BigDecimal freightCharge = BigDecimal.valueOf(100);
+		for (Product product : orderDTOForm.getProducts()) {
 
-        for (Product product : orderDTOForm.getProducts()) {
-            ProductOrder productOrder = new ProductOrder();
-            productOrder.setProduct(product);
-            productOrder.setOrder(order);
+			order.getProducts().add(product);
 
-            subtotal = subtotal.add(product.getPrice());
+			subtotal = subtotal.add(product.getPrice());
+		}
+		order.setCustomer(orderDTOForm.getCustomer());
+		order.setSubtotal(subtotal);
+		order.setFreightCharge(freightCharge);
+		order.setTotalAmount(BigDecimal.valueOf(subtotal.doubleValue() + freightCharge.doubleValue()));
 
-            order.getProductsOrders().add(productOrder);
-        }
-
-        order.setSubtotal(subtotal);
-        order.setFreightCharge(freightCharge);
-        order.setTotalAmount(BigDecimal.valueOf(subtotal.doubleValue() + freightCharge.doubleValue()));
-
-        orderRepository.save(order);
-    }
+		orderRepository.save(order);
+	}
 
 }

@@ -52,12 +52,12 @@ public class Order {
     private StatusOrder statusOrder;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private List<ProductOrder> productsOrders;
+    private List<Product> products;
 
     public Order() {
         this.creationDate = new Date();
         this.statusOrder = StatusOrder.CREATED;
-        this.productsOrders = new ArrayList<>();
+        this.products = new ArrayList<>();
     }
 
 }

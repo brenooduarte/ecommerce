@@ -1,14 +1,15 @@
 package com.ecommerce.domain.dto.form;
 
+import java.util.List;
+
 import com.ecommerce.domain.models.Product;
 import com.ecommerce.domain.models.User;
+
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-
-import java.util.List;
 
 @Data
 public class OrderDTOForm {
@@ -19,6 +20,6 @@ public class OrderDTOForm {
 
     @ManyToOne
     @JoinColumn(name = "user_customer_id", nullable = false)
-    private UserDTOForm customer;
+    private User customer;
 
 }
