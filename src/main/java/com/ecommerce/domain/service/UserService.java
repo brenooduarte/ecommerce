@@ -1,48 +1,75 @@
 package com.ecommerce.domain.service;
 
-import com.ecommerce.domain.models.User;
-import com.ecommerce.domain.exceptions.UserAlreadyExistsException;
-import com.ecommerce.domain.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.webjars.NotFoundException;
+
+import com.ecommerce.domain.dto.form.UserDTOForm;
+import com.ecommerce.domain.dto.view.UserDTOView;
+import com.ecommerce.domain.exceptions.UserAlreadyExistsException;
+import com.ecommerce.domain.models.User;
+import com.ecommerce.domain.repository.UserRepository;
+
 @Service
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+	@Autowired
+	private UserRepository userRepository;
 
-    public User getById(long id) {
-        Optional<User> userOptional = userRepository.findById(id);
-        return userOptional.orElse(null);
-    }
+	public UserDTOView getById(long id) {
+	    Optional<User> userOptional = userRepository.findById(id);
+	    UserDTOView userDTOView = new UserDTOView();
 
-    public List<User> listAllUsers() {
-        return (List<User>) userRepository.findAll();
-    }
+	    if (userOptional.isPresent()) {
+	        User user = userOptional.get();
+	        BeanUtils.copyProperties(user, userDTOView);
+	    } else {
+	        throw new NotFoundException("USER NOT FOUND");
+	    }
 
-    public User createUser(User user) throws UserAlreadyExistsException {
-        if (user == null) {
-            return userRepository.save(user);
-        }
-        throw new UserAlreadyExistsException();
-    }
+	    return userDTOView;
+	}
 
+	public List<User> listAllUsers() {
+		return (List<User>) userRepository.findAll();
+		//TODO Retornar DTO VIEW
+	}
 
-    public User updateUser(User newUser) {
-       User user = userRepository.findById(newUser.getId()).orElseThrow(() -> new NoSuchElementException("User not found"));
-       user.setName(newUser.getName());
-       user.setEmail(newUser.getEmail());
-       user.setPassword(newUser.getPassword());
+	public User createUser(UserDTOForm userDTO) throws UserAlreadyExistsException {
 
-        return userRepository.save(user);
-   }
+		User newUser = userRepository.findByEmail(userDTO.getEmail());
 
-    public void deleteUserById(long id) {
-        userRepository.deleteById(id);
-    }
+		if (newUser == null) {
+
+			newUser = new User();
+
+			BeanUtils.copyProperties(userDTO, newUser);
+			return userRepository.save(newUser);
+		} else {
+			throw new UserAlreadyExistsException();
+		}
+	}
+
+	public User updateUser(Long userId, UserDTOForm newUser) {
+
+		User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("User not found"));
+
+		BeanUtils.copyProperties(newUser, user);
+
+		try {
+			userRepository.save(user);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return user;
+	}
+
+	public void deleteUserById(long id) {
+		userRepository.deleteById(id);
+	}
 }

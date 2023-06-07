@@ -2,7 +2,12 @@ package com.ecommerce.domain.exceptions;
 
 public class UserAlreadyExistsException extends Exception {
 
-    public UserAlreadyExistsException() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public UserAlreadyExistsException() {
 
     }
 

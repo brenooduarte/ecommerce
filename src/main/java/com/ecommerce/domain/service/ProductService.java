@@ -39,10 +39,9 @@ public class ProductService {
 	}
 
 	public Product createProduct(Product product) throws ProductAlreadyExistsException {
-		if (product == null) {
-			return productRepository.save(product);
-		}
-		throw new ProductAlreadyExistsException();
+		
+		return productRepository.save(product);
+
 	}
 
 	public Product updateProduct(Product newProduct) {
