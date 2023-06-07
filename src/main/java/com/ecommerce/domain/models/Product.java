@@ -39,7 +39,8 @@ public class Product {
 
     @Column
     private int sold;
-    
+
+    @Column
     private boolean status;
     
     @PrePersist

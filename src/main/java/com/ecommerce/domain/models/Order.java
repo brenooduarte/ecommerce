@@ -3,8 +3,6 @@ package com.ecommerce.domain.models;
 import com.ecommerce.domain.enums.StatusOrder;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -14,7 +12,6 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "tb_order")
-@NoArgsConstructor
 public class Order {
 
     @Id
@@ -29,6 +26,7 @@ public class Order {
 
     @Column(name = "total_amount", nullable = false)
     private BigDecimal totalAmount;
+
     @Column(name = "creation_date", nullable = false)
     private Date creationDate;
 
@@ -53,12 +51,13 @@ public class Order {
     @Column(name = "status_order", nullable = false)
     private StatusOrder statusOrder;
 
-    @OneToMany
-    private List<ProductOrder> items = new ArrayList<>();
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<ProductOrder> productsOrders;
 
-    public Order(Date creationDate, StatusOrder status) {
-        this.creationDate = creationDate;
-        this.statusOrder = status;
+    public Order() {
+        this.creationDate = new Date();
+        this.statusOrder = StatusOrder.CREATED;
+        this.productsOrders = new ArrayList<>();
     }
 
 }

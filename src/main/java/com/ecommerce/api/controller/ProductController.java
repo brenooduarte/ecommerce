@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/product")
+@RequestMapping("/products")
 @Tag(name = "Product", description = "Controller de Product")
 public class ProductController {
 

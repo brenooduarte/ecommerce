@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.ecommerce.domain.models.UserAddress;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 public class UserDTOForm {
@@ -12,6 +13,7 @@ public class UserDTOForm {
     private String name;
 
 	@NotBlank
+	@Email
     private String email;
 
 	@NotBlank
