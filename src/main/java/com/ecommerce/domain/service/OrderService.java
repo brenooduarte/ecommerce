@@ -1,11 +1,16 @@
 package com.ecommerce.domain.service;
 
 import java.math.BigDecimal;
+import java.util.Objects;
+import java.util.Optional;
 
 import com.ecommerce.domain.models.ProductOrder;
+import com.ecommerce.domain.models.User;
 import com.ecommerce.domain.repository.ProductOrderRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.ecommerce.domain.dto.form.OrderDTOForm;
@@ -52,4 +57,24 @@ public class OrderService {
 
 	}
 
+	//TODO: implementar a consulta de pedidos por usuário na MÃO
+	public ResponseEntity<Order> findById(Long orderId, Long userId) {
+
+		Optional<Order> order = orderRepository.findById(orderId);
+		ResponseEntity<Order> responseEntity;
+
+		if (order.isEmpty()){
+			responseEntity = ResponseEntity.notFound().build();
+		}
+
+		User user = order.get().getCustomer();
+
+		if (Objects.equals(user.getId(), userId)) {
+			responseEntity = ResponseEntity.ok(order.get());
+		} else {
+			responseEntity = ResponseEntity.status(403).build();
+		}
+
+		return responseEntity;
+	}
 }

@@ -42,7 +42,11 @@ public class OrderController {
         }
     }
 
+    @GetMapping("/{orderId}/{userId}")
+    public ResponseEntity<Order> findById(@PathVariable Long orderId,@PathVariable Long userId) {
+        return orderService.findById(orderId, userId);
+    }
+
     //TODO: Implementar o método de cancelamento de pedido
-    //TODO: Implementar o método de finalização de pedido
 
 }
