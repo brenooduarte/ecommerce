@@ -28,11 +28,9 @@ public class OrderService {
 		BigDecimal freightCharge = BigDecimal.valueOf(100);
 
 		for (Product product : orderDTOForm.getProducts()) {
-
-			order.getProducts().add(product);
-
 			subtotal = subtotal.add(product.getPrice());
 		}
+
 		order.setCustomer(orderDTOForm.getCustomer());
 		order.setSubtotal(subtotal);
 		order.setFreightCharge(freightCharge);

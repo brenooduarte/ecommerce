@@ -51,7 +51,7 @@ public class Order {
     @Column(name = "status_order", nullable = false)
     private StatusOrder statusOrder;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany
     private List<Product> products;
 
     public Order() {

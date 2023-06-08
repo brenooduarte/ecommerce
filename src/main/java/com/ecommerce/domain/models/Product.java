@@ -37,14 +37,6 @@ public class Product {
 
     @Column(name = "price_promotion")
     private BigDecimal pricePromotion;
-    
-    @ManyToOne
-    @JoinColumn(name = "order_id")
-    @JsonIgnore
-    private Order order;
-
-    @Column
-    private int sold;
 
     @Column
     private boolean status;
