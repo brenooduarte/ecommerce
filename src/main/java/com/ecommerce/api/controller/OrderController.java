@@ -24,15 +24,15 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
-    @GetMapping
-    public ResponseEntity<List<Order>> list() {
-        return new ResponseEntity<>(orderRepository.findAll(), HttpStatus.OK);
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<Order>> list(@PathVariable Long userId) {
+        return new ResponseEntity<>(orderRepository.listAll(userId), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<?> add(@RequestBody OrderDTOForm order) {
+    public ResponseEntity<?> add(@RequestBody OrderDTOForm orderDTOForm) {
         try {
-            orderService.createOrder(order);
+            orderService.createOrder(orderDTOForm);
 
             return ResponseEntity.status(HttpStatus.CREATED)
                     .build();
@@ -43,7 +43,7 @@ public class OrderController {
     }
 
     @GetMapping("/{orderId}/{userId}")
-    public ResponseEntity<Order> findById(@PathVariable Long orderId,@PathVariable Long userId) {
+    public ResponseEntity<Order> findById(@PathVariable Long orderId, @PathVariable Long userId) {
         return orderService.findById(orderId, userId);
     }
 

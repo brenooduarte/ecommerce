@@ -1,6 +1,7 @@
 package com.ecommerce.domain.service;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -44,7 +45,7 @@ public class OrderService {
 		order.setCustomer(orderDTOForm.getCustomer());
 		order.setSubtotal(subtotal);
 		order.setFreightCharge(freightCharge);
-		order.setTotalAmount(BigDecimal.valueOf(subtotal.doubleValue() + freightCharge.doubleValue()));
+		order.setTotalAmount(subtotal.add(freightCharge));
 
 		orderRepository.save(order);
 
@@ -76,5 +77,9 @@ public class OrderService {
 		}
 
 		return responseEntity;
+	}
+
+	public ResponseEntity<List<Order>> listAll(Long userId) {
+		return ResponseEntity.ok(orderRepository.listAll(userId));
 	}
 }

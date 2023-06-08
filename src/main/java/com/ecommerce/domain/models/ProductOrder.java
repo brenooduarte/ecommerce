@@ -17,12 +17,12 @@ public class ProductOrder {
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "product_id")
+    @JoinColumn(name = "product_id", foreignKey = @ForeignKey(name = "fk_product_id"), unique = false)
     private Product product;
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "order_id")
+    @JoinColumn(name = "order_id", foreignKey = @ForeignKey(name = "fk_order_id"), unique = false)
     private Order order;
 
     @Column(name = "price_on_purchase")
