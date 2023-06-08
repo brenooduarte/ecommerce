@@ -2,6 +2,8 @@ package com.ecommerce.domain.service;
 
 import java.math.BigDecimal;
 
+import com.ecommerce.domain.models.ProductOrder;
+import com.ecommerce.domain.repository.ProductOrderRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,9 @@ public class OrderService {
 
 	@Autowired
 	private OrderRepository orderRepository;
+
+	@Autowired
+	private ProductOrderRepository productOrderRepository;
 
 	public void createOrder(OrderDTOForm orderDTOForm) {
 
@@ -37,6 +42,14 @@ public class OrderService {
 		order.setTotalAmount(BigDecimal.valueOf(subtotal.doubleValue() + freightCharge.doubleValue()));
 
 		orderRepository.save(order);
+
+		for (Product product : orderDTOForm.getProducts()) {
+			ProductOrder productOrder = new ProductOrder();
+			productOrder.setProduct(product);
+			productOrder.setOrder(order);
+			productOrderRepository.save(productOrder);
+		}
+
 	}
 
 }
