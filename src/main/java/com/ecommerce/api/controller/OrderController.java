@@ -24,14 +24,14 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
-    @GetMapping
-    public ResponseEntity<List<Order>> list(@RequestBody Long userId) {
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Order>> list(@PathVariable Long userId) {
         return new ResponseEntity<>(orderRepository.findAllByUserId(userId), HttpStatus.OK);
     }
 
 
-    @GetMapping("/{orderId}")
-    public ResponseEntity<Order> findById(@PathVariable Long orderId, @RequestBody Long userId) {
+    @GetMapping("/{orderId}/user/{userId}")
+    public ResponseEntity<Order> findById(@PathVariable Long orderId, @PathVariable Long userId) {
         return orderService.findById(orderId, userId);
     }
 
@@ -48,8 +48,9 @@ public class OrderController {
         }
     }
 
-    @PatchMapping("/{orderId}")
-    public ResponseEntity<Order> setStatusOrder(@PathVariable Long orderId, @RequestBody Long userId, @RequestBody String status) {
+    @PatchMapping("/{orderId}/user/{userId}")
+    public ResponseEntity<Order> setStatusOrder(
+            @PathVariable Long orderId, @PathVariable Long userId, @RequestBody String status) {
         return orderService.setStatusOrder(orderId, userId, status);
     }
 

@@ -37,9 +37,9 @@ public class Order {
     @Column(name = "delivery_date")
     private Date deliveryDate;
 
-    //TODO Ajustar mapeamento
-//    @Column(name = "delivery_address")
-//    private Address deliveryAddress;
+    @ManyToOne
+    @JoinColumn(name = "delivery_address", nullable = false)
+    private Address deliveryAddress;
 
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)

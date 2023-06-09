@@ -1,11 +1,6 @@
 package com.ecommerce.domain.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
@@ -32,9 +27,8 @@ public class Address {
     @Column
     private String neighborhood;
 
-    //TODO Adicionar mapeamento
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "city_address_id")
-//    private City city;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "city_id")
+    private City city;
 
 }
