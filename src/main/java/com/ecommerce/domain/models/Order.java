@@ -44,20 +44,16 @@ public class Order {
 //    private Address deliveryAddress;
 
     @ManyToOne
-    @JoinColumn(name = "user_customer_id", nullable = false)
+    @JoinColumn(name = "customer_id", nullable = false)
     private User customer;
 
     @Enumerated
     @Column(name = "status_order", nullable = false)
     private StatusOrder statusOrder;
 
-    @OneToMany
-    private List<Product> products;
-
     public Order() {
         this.creationDate = new Date();
         this.statusOrder = StatusOrder.CREATED;
-        this.products = new ArrayList<>();
     }
 
 }
