@@ -33,8 +33,8 @@ public class Product {
     @Column(nullable = false)
     private boolean promotion;
 
-    @Column(name = "price_promotion")
-    private BigDecimal pricePromotion;
+    @Column(name = "promotion_price")
+    private BigDecimal promotionPrice;
 
     @Column
     private boolean status;

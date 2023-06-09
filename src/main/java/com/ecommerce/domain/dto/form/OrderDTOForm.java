@@ -1,5 +1,6 @@
 package com.ecommerce.domain.dto.form;
 
+import com.ecommerce.domain.models.Address;
 import com.ecommerce.domain.models.Product;
 import com.ecommerce.domain.models.User;
 import jakarta.validation.constraints.NotEmpty;
@@ -16,5 +17,9 @@ public class OrderDTOForm {
     private List<Product> products;
 
     private User customer;
+
+    @NotEmpty
+    @Size(min = 1, max = 1)
+    private Address deliveryAddress;
 
 }

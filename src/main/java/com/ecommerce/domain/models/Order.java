@@ -49,9 +49,11 @@ public class Order {
     @Column(name = "status_order", nullable = false)
     private StatusOrder statusOrder;
 
-    public Order() {
+    public Order(BigDecimal subtotal, BigDecimal freightCharge, BigDecimal totalAmount) {
+        this.subtotal = subtotal;
+        this.freightCharge = freightCharge;
+        this.totalAmount = totalAmount;
         this.creationDate = new Date();
         this.statusOrder = StatusOrder.CREATED;
     }
-
 }

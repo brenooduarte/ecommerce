@@ -29,9 +29,6 @@ public class OrderService {
 
 	public void createOrder(OrderDTOForm orderDTOForm) {
 
-		Order order = new Order();
-		BeanUtils.copyProperties(orderDTOForm, order);
-
 		BigDecimal subtotal = BigDecimal.ZERO;
 
 		// TODO: Calculate freight charge
@@ -40,19 +37,13 @@ public class OrderService {
 		for (Product product : orderDTOForm.getProducts()) {
 			subtotal = subtotal.add(product.getPrice());
 		}
-
-		order.setCustomer(orderDTOForm.getCustomer());
-		order.setSubtotal(subtotal);
-		order.setFreightCharge(freightCharge);
-		order.setTotalAmount(subtotal.add(freightCharge));
+		Order order = new Order(subtotal, freightCharge, subtotal.add(freightCharge));
+		BeanUtils.copyProperties(orderDTOForm, order);
 
 		orderRepository.save(order);
 
 		for (Product product : orderDTOForm.getProducts()) {
-			ProductOrder productOrder = new ProductOrder();
-			productOrder.setProduct(product);
-			productOrder.setOrder(order);
-			productOrderRepository.save(productOrder);
+			productOrderRepository.save(new ProductOrder(order, product));
 		}
 
 	}

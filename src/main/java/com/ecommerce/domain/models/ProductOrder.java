@@ -31,4 +31,12 @@ public class ProductOrder {
     @Column(name = "promotion_price")
     private BigDecimal promotionPrice;
 
+    public ProductOrder(Order order, Product product) {
+        this.order = order;
+        this.product = product;
+        this.priceOnPurchase = product.getPrice();
+        if (product.getPromotionPrice() != null) {
+            this.promotionPrice = product.getPromotionPrice();
+        }
+    }
 }
