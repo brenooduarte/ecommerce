@@ -1,16 +1,15 @@
 package com.ecommerce.domain.service;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.ecommerce.domain.enums.StatusOrder;
 import com.ecommerce.domain.models.ProductOrder;
 import com.ecommerce.domain.models.User;
 import com.ecommerce.domain.repository.ProductOrderRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -79,7 +78,29 @@ public class OrderService {
 		return responseEntity;
 	}
 
-	public ResponseEntity<List<Order>> listAll(Long userId) {
-		return ResponseEntity.ok(orderRepository.listAll(userId));
+	public ResponseEntity<Order> setStatusOrder(Long orderId, Long userId, String status) {
+
+		status = status.toUpperCase();
+
+		Order order = findById(orderId, userId).getBody();
+
+		if (order == null) {
+			return ResponseEntity.notFound().build();
+		}
+
+		if (status.equals("CREATED")) {
+			order.setStatusOrder(StatusOrder.valueOf("CREATED"));
+		} else if (status.equals("CONFIRMED")) {
+			order.setStatusOrder(StatusOrder.valueOf("CONFIRMED"));
+		} else if (status.equals("DELIVERED")) {
+			order.setStatusOrder(StatusOrder.valueOf("DELIVERED"));
+		} else if (status.equals("CANCELED")) {
+			order.setStatusOrder(StatusOrder.valueOf("CANCELED"));
+		} else {
+			return ResponseEntity.badRequest().build();
+		}
+
+		orderRepository.save(order);
+		return ResponseEntity.ok(order);
 	}
 }

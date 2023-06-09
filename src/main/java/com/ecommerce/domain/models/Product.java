@@ -1,13 +1,10 @@
 package com.ecommerce.domain.models;
 
+import com.ecommerce.utils.GlobalConstants;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.util.List;
-
-import com.ecommerce.utils.GlobalConstants;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Data

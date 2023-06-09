@@ -5,9 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Data
@@ -47,7 +45,7 @@ public class Order {
     @JoinColumn(name = "customer_id", nullable = false)
     private User customer;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     @Column(name = "status_order", nullable = false)
     private StatusOrder statusOrder;
 
