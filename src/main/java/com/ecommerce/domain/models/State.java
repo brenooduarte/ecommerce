@@ -2,7 +2,6 @@ package com.ecommerce.domain.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
@@ -15,5 +14,12 @@ public class State {
 
     @Column(nullable = false)
     private String name;
+
+    public State(String name) {
+        this.name = name;
+    }
+
+    public State() {
+    }
 
 }

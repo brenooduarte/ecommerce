@@ -13,13 +13,17 @@ public class UserAddress {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "tb_user")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "tb_address")
+    @JoinColumn(name = "address_id")
     private Address address;
 
     private String addressType;
 
+    public UserAddress(User user, Address address) {
+        this.user = user;
+        this.address = address;
+    }
 }

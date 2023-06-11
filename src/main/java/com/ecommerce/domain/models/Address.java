@@ -27,8 +27,15 @@ public class Address {
     @Column
     private String neighborhood;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "city_id")
     private City city;
+
+    public Address(City city) {
+        this.city = city;
+    }
+
+    public Address() {
+    }
 
 }

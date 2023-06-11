@@ -2,7 +2,6 @@ package com.ecommerce.domain.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
@@ -19,5 +18,13 @@ public class City {
     @ManyToOne
     @JoinColumn(nullable = false)
     private State state;
+
+    public City(String name, State state) {
+        this.name = name;
+        this.state = state;
+    }
+
+    public City() {
+    }
 
 }

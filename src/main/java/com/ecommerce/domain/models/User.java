@@ -33,4 +33,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserAddress> address;
 
+    public void addAddress(UserAddress userAddress) {
+        this.address.add(userAddress);
+    }
 }

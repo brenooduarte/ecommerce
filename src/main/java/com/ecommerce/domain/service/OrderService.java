@@ -48,7 +48,6 @@ public class OrderService {
 
 	}
 
-	//TODO: implementar a consulta de pedidos por usuário na MÃO
 	public ResponseEntity<Order> findById(Long orderId, Long userId) {
 
 		Optional<Order> order = orderRepository.findById(orderId);

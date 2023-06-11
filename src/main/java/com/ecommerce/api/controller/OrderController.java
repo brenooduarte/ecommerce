@@ -29,7 +29,6 @@ public class OrderController {
         return new ResponseEntity<>(orderRepository.findAllByUserId(userId), HttpStatus.OK);
     }
 
-
     @GetMapping("/{orderId}/user/{userId}")
     public ResponseEntity<Order> findById(@PathVariable Long orderId, @PathVariable Long userId) {
         return orderService.findById(orderId, userId);

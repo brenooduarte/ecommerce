@@ -1,23 +1,20 @@
 package com.ecommerce.infraestructure.Impl;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-
-import com.ecommerce.domain.dto.view.ProductDTOView;
 import com.ecommerce.domain.models.Product;
 import com.ecommerce.infraestructure.query.ProductRepositoryQueries;
 import com.ecommerce.utils.GlobalConstants;
-
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public class ProductRepositoryImpl implements ProductRepositoryQueries {
-	
 
-	@Autowired
+
+	@PersistenceContext
 	EntityManager entityManager;
 	
 	@Override
