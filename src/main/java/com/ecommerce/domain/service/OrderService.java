@@ -86,9 +86,6 @@ public class OrderService {
 		}
 
 		switch (status) {
-			case "CREATED":
-				order.setStatusOrder(StatusOrder.valueOf("CREATED"));
-				break;
 			case "CONFIRMED":
 				order.setStatusOrder(StatusOrder.valueOf("CONFIRMED"));
 				order.setConfirmationDate(new Date());
