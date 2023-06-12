@@ -42,6 +42,30 @@ public class AddressController {
         }
     }
 
-    //TODO: Implement update and delete
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody AddressDTOForm addressDTOForm) {
+        try {
+            addressService.updateAddress(addressDTOForm, id);
+
+            return ResponseEntity.ok()
+                    .build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.badRequest()
+                    .body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        try {
+            addressRepository.deleteById(id);
+
+            return ResponseEntity.ok()
+                    .build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.badRequest()
+                    .body(e.getMessage());
+        }
+    }
 
 }

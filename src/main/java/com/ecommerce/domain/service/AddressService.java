@@ -57,4 +57,29 @@ public class AddressService {
 
     }
 
+    public void updateAddress(AddressDTOForm addressDTOForm, Long id) {
+
+        Address address = addressRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Address not found"));
+
+        BeanUtils.copyProperties(addressDTOForm, address, "stateName", "cityName");
+
+        State state = stateRepository.findByName(addressDTOForm.getStateName());
+
+        if (state == null) {
+            state = new State(addressDTOForm.getStateName());
+            stateRepository.save(state);
+        }
+
+        City city = cityRepository.findByNameAndState(addressDTOForm.getStateName(), state);
+
+        if (city == null) {
+            city = new City(addressDTOForm.getCityName(), state);
+            cityRepository.save(city);
+        }
+
+        address.setCity(city);
+        addressRepository.save(address);
+    }
+
 }
