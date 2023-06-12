@@ -25,8 +25,8 @@ public class OrderController {
     private OrderService orderService;
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Order>> list(@PathVariable Long userId) {
-        return new ResponseEntity<>(orderRepository.findAllByUserId(userId), HttpStatus.OK);
+    public ResponseEntity<List<Order>> listAll(@PathVariable Long userId) {
+        return new ResponseEntity<>(orderService.findAllByUserId(userId), HttpStatus.OK);
     }
 
     @GetMapping("/{orderId}/user/{userId}")

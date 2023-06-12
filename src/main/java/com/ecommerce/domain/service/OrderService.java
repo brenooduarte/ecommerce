@@ -1,22 +1,22 @@
 package com.ecommerce.domain.service;
 
-import java.math.BigDecimal;
-import java.util.Objects;
-import java.util.Optional;
-
+import com.ecommerce.domain.dto.form.OrderDTOForm;
 import com.ecommerce.domain.enums.StatusOrder;
-import com.ecommerce.domain.models.ProductOrder;
-import com.ecommerce.domain.models.User;
+import com.ecommerce.domain.models.*;
+import com.ecommerce.domain.repository.AddressRepository;
+import com.ecommerce.domain.repository.OrderRepository;
 import com.ecommerce.domain.repository.ProductOrderRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.ecommerce.domain.dto.form.OrderDTOForm;
-import com.ecommerce.domain.models.Order;
-import com.ecommerce.domain.models.Product;
-import com.ecommerce.domain.repository.OrderRepository;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class OrderService {
@@ -26,6 +26,9 @@ public class OrderService {
 
 	@Autowired
 	private ProductOrderRepository productOrderRepository;
+
+	@Autowired
+	private AddressRepository addressRepository;
 
 	public void createOrder(OrderDTOForm orderDTOForm) {
 
@@ -38,8 +41,12 @@ public class OrderService {
 			subtotal = subtotal.add(product.getPrice());
 		}
 		Order order = new Order(subtotal, freightCharge, subtotal.add(freightCharge));
-		BeanUtils.copyProperties(orderDTOForm, order);
+		BeanUtils.copyProperties(orderDTOForm, order, "delivery_address_id");
 
+		Address deliveryAddress = addressRepository.findById(orderDTOForm.getDeliveryAddressId())
+				.orElseThrow(() -> new EntityNotFoundException("Address not exists"));
+
+		order.setDeliveryAddress(deliveryAddress);
 		orderRepository.save(order);
 
 		for (Product product : orderDTOForm.getProducts()) {
@@ -78,19 +85,32 @@ public class OrderService {
 			return ResponseEntity.notFound().build();
 		}
 
-		if (status.equals("CREATED")) {
-			order.setStatusOrder(StatusOrder.valueOf("CREATED"));
-		} else if (status.equals("CONFIRMED")) {
-			order.setStatusOrder(StatusOrder.valueOf("CONFIRMED"));
-		} else if (status.equals("DELIVERED")) {
-			order.setStatusOrder(StatusOrder.valueOf("DELIVERED"));
-		} else if (status.equals("CANCELED")) {
-			order.setStatusOrder(StatusOrder.valueOf("CANCELED"));
-		} else {
-			return ResponseEntity.badRequest().build();
+		switch (status) {
+			case "CREATED":
+				order.setStatusOrder(StatusOrder.valueOf("CREATED"));
+				break;
+			case "CONFIRMED":
+				order.setStatusOrder(StatusOrder.valueOf("CONFIRMED"));
+				order.setConfirmationDate(new Date());
+				break;
+			case "DELIVERED":
+				order.setStatusOrder(StatusOrder.valueOf("DELIVERED"));
+				order.setDeliveryDate(new Date());
+				break;
+			case "CANCELED":
+				order.setStatusOrder(StatusOrder.valueOf("CANCELED"));
+				order.setCancellationDate(new Date());
+				break;
+			default:
+				return ResponseEntity.badRequest().build();
 		}
 
 		orderRepository.save(order);
 		return ResponseEntity.ok(order);
+	}
+
+	public List<Order> findAllByUserId(Long userId) {
+		// TODO: Implement pagination
+		return orderRepository.findAllByUserId(userId);
 	}
 }

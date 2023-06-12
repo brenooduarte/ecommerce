@@ -1,8 +1,9 @@
 package com.ecommerce.domain.dto.form;
 
-import com.ecommerce.domain.models.Address;
 import com.ecommerce.domain.models.Product;
 import com.ecommerce.domain.models.User;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -18,8 +19,8 @@ public class OrderDTOForm {
 
     private User customer;
 
-    @NotEmpty
-    @Size(min = 1, max = 1)
-    private Address deliveryAddress;
+    @NotBlank
+    @JsonProperty("delivery_address_id")
+    private Long deliveryAddressId;
 
 }
