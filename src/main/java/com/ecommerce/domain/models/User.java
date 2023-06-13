@@ -24,7 +24,7 @@ public class User {
     private String password;
 
     @OneToMany
-    @JoinColumn(name = "assessment_id")
+    @JoinColumn(name = "user_id")
     private List<Assessment> assessments;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)

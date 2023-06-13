@@ -31,7 +31,7 @@ public class Product {
     @Column
     private boolean highlight;
 
-    @Column(nullable = false)
+    @Column
     private boolean promotion;
 
     @Column(name = "promotion_price")
