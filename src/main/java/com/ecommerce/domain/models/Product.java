@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Data
@@ -38,6 +39,14 @@ public class Product {
 
     @Column
     private boolean status;
+
+    @OneToMany
+    @JoinColumn(name = "product_id")
+    private List<Assessment> assessments;
+
+    public void addAssessment(Assessment assessment) {
+        this.assessments.add(assessment);
+    }
 
     @PrePersist
     public void prePersist() {

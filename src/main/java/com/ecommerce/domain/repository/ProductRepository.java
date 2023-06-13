@@ -8,5 +8,7 @@ import com.ecommerce.infraestructure.query.ProductRepositoryQueries;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long>, ProductRepositoryQueries {
-	
+
+    Product findByName(String name);
+
 }

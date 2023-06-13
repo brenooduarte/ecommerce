@@ -1,26 +1,33 @@
 package com.ecommerce.domain.service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Set;
-
+import com.ecommerce.domain.dto.view.ProductDTOView;
+import com.ecommerce.domain.exceptions.ProductAlreadyExistsException;
+import com.ecommerce.domain.models.Assessment;
+import com.ecommerce.domain.models.Product;
+import com.ecommerce.domain.models.User;
+import com.ecommerce.domain.repository.AssessmentRepository;
+import com.ecommerce.domain.repository.ProductRepository;
+import com.ecommerce.domain.repository.UserRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ecommerce.domain.dto.view.ProductDTOView;
-import com.ecommerce.domain.exceptions.ProductAlreadyExistsException;
-import com.ecommerce.domain.models.Product;
-import com.ecommerce.domain.repository.ProductRepository;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class ProductService {
 
 	@Autowired
-	ProductRepository productRepository;
+	private ProductRepository productRepository;
+
+	@Autowired
+	private AssessmentRepository assessmentRepository;
+
+	@Autowired
+	private UserRepository userRepository;
 
 	public Product getById(long id) {
 		Optional<Product> userOptional = productRepository.findById(id);
@@ -39,9 +46,14 @@ public class ProductService {
 	}
 
 	public Product createProduct(Product product) throws ProductAlreadyExistsException {
-		
-		return productRepository.save(product);
 
+		Product productFound = productRepository.findByName(product.getName());
+
+		if (productFound != null) {
+			throw new ProductAlreadyExistsException("Product already exists");
+		}
+
+		return productRepository.save(product);
 	}
 
 	public Product updateProduct(Product newProduct) {
@@ -55,5 +67,33 @@ public class ProductService {
 
 	public void deleteProductById(long id) {
 		productRepository.deleteById(id);
+	}
+
+    public Assessment addAssessment(Assessment assessment, Long productId, Long userId) {
+		Product product = productRepository.findById(productId)
+				.orElseThrow(() -> new NoSuchElementException("Product not found"));
+
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new NoSuchElementException("User not found"));
+
+		user.addAssessment(assessment);
+		product.addAssessment(assessment);
+		assessmentRepository.save(assessment);
+
+		return assessment;
+    }
+
+	public void setActivePromotion(Long productId) {
+		Product product = productRepository.findById(productId)
+				.orElseThrow(() -> new NoSuchElementException("Product not found"));
+
+		product.setPromotion(!product.isPromotion());
+	}
+
+	public void setActiveProduct(Long productId) {
+		Product product = productRepository.findById(productId)
+				.orElseThrow(() -> new NoSuchElementException("Product not found"));
+
+		product.setPromotion(!product.isStatus());
 	}
 }

@@ -20,7 +20,9 @@ public class UserAddress {
     @JoinColumn(name = "address_id")
     private Address address;
 
-    private String addressType;
+    // TODO: implementar set nesse atributo
+    @Column(name = "address_type")
+    private Long addressType;
 
     public UserAddress(User user, Address address) {
         this.user = user;
