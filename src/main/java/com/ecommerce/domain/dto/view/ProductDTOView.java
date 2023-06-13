@@ -2,6 +2,7 @@ package com.ecommerce.domain.dto.view;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
@@ -19,6 +20,7 @@ public class ProductDTOView {
 
     private boolean promotion;
 
+    @JsonProperty("price_promotion")
     private BigDecimal pricePromotion;
 	
 }

@@ -3,9 +3,11 @@ package com.ecommerce.domain.service;
 import com.ecommerce.domain.dto.view.ProductDTOView;
 import com.ecommerce.domain.exceptions.ProductAlreadyExistsException;
 import com.ecommerce.domain.models.Assessment;
+import com.ecommerce.domain.models.Category;
 import com.ecommerce.domain.models.Product;
 import com.ecommerce.domain.models.User;
 import com.ecommerce.domain.repository.AssessmentRepository;
+import com.ecommerce.domain.repository.CategoryRepository;
 import com.ecommerce.domain.repository.ProductRepository;
 import com.ecommerce.domain.repository.UserRepository;
 import org.springframework.beans.BeanUtils;
@@ -29,6 +31,9 @@ public class ProductService {
 	@Autowired
 	private UserRepository userRepository;
 
+	@Autowired
+	private CategoryRepository categoryRepository;
+
 	public Product getById(long id) {
 		Optional<Product> userOptional = productRepository.findById(id);
 		return userOptional.orElse(null);
@@ -45,13 +50,18 @@ public class ProductService {
 		return listView;
 	}
 
-	public Product createProduct(Product product) throws ProductAlreadyExistsException {
+	public Product createProduct(Product product, Long categoryId) throws ProductAlreadyExistsException {
 
 		Product productFound = productRepository.findByName(product.getName());
 
 		if (productFound != null) {
 			throw new ProductAlreadyExistsException("Product already exists");
 		}
+
+		Category category = categoryRepository.findById(categoryId)
+				.orElseThrow(() -> new NoSuchElementException("Category not found"));
+
+		category.addProduct(product);
 
 		return productRepository.save(product);
 	}
@@ -95,5 +105,15 @@ public class ProductService {
 				.orElseThrow(() -> new NoSuchElementException("Product not found"));
 
 		product.setPromotion(!product.isStatus());
+	}
+
+	public void setCategoryInProduct(Long productId, Long categoryId) {
+		Category category = categoryRepository.findById(categoryId)
+				.orElseThrow(() -> new NoSuchElementException("Category not found"));
+
+		Product product = productRepository.findById(productId)
+				.orElseThrow(() -> new NoSuchElementException("Product not found"));
+
+		category.addProduct(product);
 	}
 }

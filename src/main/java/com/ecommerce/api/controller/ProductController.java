@@ -1,5 +1,6 @@
 package com.ecommerce.api.controller;
 
+import com.ecommerce.domain.dto.form.ProductDTOForm;
 import com.ecommerce.domain.dto.view.ProductDTOView;
 import com.ecommerce.domain.exceptions.EntityInUseException;
 import com.ecommerce.domain.exceptions.ProductAlreadyExistsException;
@@ -47,10 +48,13 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addProduct(@RequestBody Product product) {
+    public ResponseEntity<?> addProduct(@RequestBody ProductDTOForm productDTOForm) {
         try {
+            Product product = new Product();
+            BeanUtils.copyProperties(productDTOForm, product, "category_id");
+
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(productService.createProduct(product));
+                    .body(productService.createProduct(product, productDTOForm.getCategoryId()));
 
         } catch (ProductAlreadyExistsException e) {
             return ResponseEntity.badRequest()
@@ -60,10 +64,28 @@ public class ProductController {
 
     @PostMapping("{productId}/comments/user/{userId}")
     public ResponseEntity<?> addAssessment(
-            @RequestBody Assessment assessment, @PathVariable Long productId, @PathVariable Long userId) {
+            @RequestBody Assessment assessment,
+            @PathVariable Long productId,
+            @PathVariable Long userId) {
+
         try {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(productService.addAssessment(assessment, productId, userId));
+
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.badRequest()
+                    .body(e.getMessage());
+        }
+    }
+
+    @PatchMapping("/{productId}/category/{categoryId}")
+    public ResponseEntity<?> setCategoryInProduct(
+            @PathVariable Long productId,
+            @PathVariable Long categoryId) {
+
+        try {
+            productService.setCategoryInProduct(productId, categoryId);
+            return ResponseEntity.ok().build();
 
         } catch (EntityNotFoundException e) {
             return ResponseEntity.badRequest()
@@ -82,7 +104,10 @@ public class ProductController {
     }
 
     @PutMapping("/{productId}")
-    public ResponseEntity<?> update(@PathVariable Long productId, @RequestBody Product product) {
+    public ResponseEntity<?> update(
+            @PathVariable Long productId,
+            @RequestBody Product product) {
+
         try {
             Optional<Product> currentProduct = productRepository.findById(productId);
 
