@@ -50,7 +50,7 @@ public class ProductService {
 		return listView;
 	}
 
-	public Product createProduct(Product product, Long categoryId) throws ProductAlreadyExistsException {
+	public ProductDTOView createProduct(Product product, Long categoryId) throws ProductAlreadyExistsException {
 
 		Product productFound = productRepository.findByName(product.getName());
 
@@ -61,9 +61,14 @@ public class ProductService {
 		Category category = categoryRepository.findById(categoryId)
 				.orElseThrow(() -> new NoSuchElementException("Category not found"));
 
+		product = productRepository.save(product);
 		category.addProduct(product);
+		categoryRepository.save(category);
 
-		return productRepository.save(product);
+		ProductDTOView productDTOView = new ProductDTOView();
+		BeanUtils.copyProperties(product, productDTOView);
+
+		return productDTOView;
 	}
 
 	public Product updateProduct(Product newProduct) {

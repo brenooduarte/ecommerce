@@ -3,6 +3,7 @@ package com.ecommerce.domain.models;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -27,6 +28,11 @@ public class Category {
     public Category(String image, String name) {
         this.image = image;
         this.name = name;
+        products = new ArrayList<>();
+    }
+
+    public Category() {
+        products = new ArrayList<>();
     }
 
     public void addProduct(Product product) {

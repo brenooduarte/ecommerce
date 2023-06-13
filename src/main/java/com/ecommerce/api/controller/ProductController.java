@@ -48,7 +48,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addProduct(@RequestBody ProductDTOForm productDTOForm) {
+    public ResponseEntity<?> createProduct(@RequestBody ProductDTOForm productDTOForm) {
         try {
             Product product = new Product();
             BeanUtils.copyProperties(productDTOForm, product, "category_id");
@@ -127,7 +127,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{productId}")
-    public ResponseEntity<?> remove(@PathVariable Long productId) {
+    public ResponseEntity<?> deleteProductById(@PathVariable Long productId) {
         try {
             productService.deleteProductById(productId);
             return ResponseEntity.noContent().build();

@@ -3,10 +3,14 @@ package com.ecommerce.domain.dto.form;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 public class ProductDTOForm {
 
     private String name;
+
+    private BigDecimal price;
 
     private String description;
 
@@ -15,8 +19,6 @@ public class ProductDTOForm {
     private boolean highlight;
 
     private boolean promotion;
-
-    private String price;
 
     @JsonProperty("price_promotion")
     private String pricePromotion;
