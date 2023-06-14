@@ -92,4 +92,8 @@ public class AddressService {
         user.setAddressType(addressType);
         userRepository.save(user);
     }
+
+    public Address findByAddressIdAndUserId(Long addressId, Long userId) {
+        return addressRepository.findByAddressIdAndUserId(addressId, userId);
+    }
 }

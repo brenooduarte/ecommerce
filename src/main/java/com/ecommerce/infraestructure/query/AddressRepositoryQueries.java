@@ -10,4 +10,6 @@ public interface AddressRepositoryQueries {
 
     Address getAddressType(Long addressTypeId, Long userId);
 
+    Address findByAddressIdAndUserId(Long addressId, Long userId);
+
 }

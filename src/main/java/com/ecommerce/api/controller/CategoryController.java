@@ -5,6 +5,7 @@ import com.ecommerce.domain.dto.view.CategoryDTOView;
 import com.ecommerce.domain.dto.view.ProductDTOView;
 import com.ecommerce.domain.repository.CategoryRepository;
 import com.ecommerce.domain.service.CategoryService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/categories")
+@Tag(name = "Category", description = "Controller de Category")
 public class CategoryController {
 
     @Autowired

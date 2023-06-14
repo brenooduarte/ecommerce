@@ -8,11 +8,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.NoResultException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/addresses")
@@ -27,18 +29,26 @@ public class AddressController {
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Address>> findAll(@PathVariable Long userId) {
-        return new ResponseEntity<>(addressRepository.findAll(userId), HttpStatus.OK);
+        try {
+            return new ResponseEntity<>(addressRepository.findAll(userId), HttpStatus.OK);
+
+        } catch (EmptyResultDataAccessException e) {
+            return ResponseEntity.noContent()
+                    .build();
+        }
+
     }
 
-    @GetMapping("{addressTypeId}/standard/user/{userId}")
-    public ResponseEntity<Address> getAddressType(
-            @PathVariable Long addressTypeId,
+    @GetMapping("{addressId}/user/{userId}")
+    public ResponseEntity<Address> findByAddressIdAndUserId(
+            @PathVariable Long addressId,
             @PathVariable Long userId) {
 
         try {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(addressRepository.getAddressType(addressTypeId, userId));
-        } catch (NoResultException e) {
+                    .body(addressService.findByAddressIdAndUserId(addressId, userId));
+
+        } catch (EmptyResultDataAccessException e) {
             return ResponseEntity.noContent()
                     .build();
         }
