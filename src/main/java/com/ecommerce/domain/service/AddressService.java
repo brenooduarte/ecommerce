@@ -82,4 +82,14 @@ public class AddressService {
         addressRepository.save(address);
     }
 
+    public void setAddressType(Long addressType, Long userId) {
+        addressRepository.findById(addressType)
+                .orElseThrow(() -> new EntityNotFoundException("Address not found"));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        user.setAddressType(addressType);
+        userRepository.save(user);
+    }
 }

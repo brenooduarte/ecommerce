@@ -8,4 +8,6 @@ public interface AddressRepositoryQueries {
 
     List<Address> findAll(Long userId);
 
+    Address getAddressType(Long addressTypeId, Long userId);
+
 }

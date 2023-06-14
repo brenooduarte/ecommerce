@@ -6,6 +6,7 @@ import com.ecommerce.domain.models.*;
 import com.ecommerce.domain.repository.AddressRepository;
 import com.ecommerce.domain.repository.OrderRepository;
 import com.ecommerce.domain.repository.ProductOrderRepository;
+import com.ecommerce.domain.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,9 @@ public class OrderService {
 
 	@Autowired
 	private AddressRepository addressRepository;
+
+	@Autowired
+	private UserRepository userRepository;
 
 	public void createOrder(OrderDTOForm orderDTOForm) {
 
@@ -107,7 +111,6 @@ public class OrderService {
 	}
 
 	public List<Order> findAllByUserId(Long userId) {
-		// TODO: Implement pagination
 		return orderRepository.findAllByUserId(userId);
 	}
 }

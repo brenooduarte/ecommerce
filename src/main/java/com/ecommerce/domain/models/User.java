@@ -30,6 +30,9 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserAddress> address;
 
+    @Column(name = "address_type")
+    private Long addressType;
+
     public void addAddress(UserAddress userAddress) {
         this.address.add(userAddress);
     }

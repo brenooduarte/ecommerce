@@ -6,6 +6,7 @@ import com.ecommerce.domain.dto.view.ProductDTOView;
 import com.ecommerce.domain.repository.CategoryRepository;
 import com.ecommerce.domain.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,11 +35,15 @@ public class CategoryController {
 
     @PostMapping
     public ResponseEntity<?> addCategory(@RequestBody CategoryDTOForm categoryDTOForm) {
-        return ResponseEntity.ok().body(categoryService.createCategory(categoryDTOForm));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(categoryService.createCategory(categoryDTOForm));
     }
 
     @PutMapping("/{categoryId}")
-    public ResponseEntity<CategoryDTOView> updateCategoryById(@PathVariable Long categoryId, @RequestBody CategoryDTOForm categoryDTOForm) {
+    public ResponseEntity<CategoryDTOView> updateCategoryById(
+            @PathVariable Long categoryId,
+            @RequestBody CategoryDTOForm categoryDTOForm) {
+
         return ResponseEntity.ok().body(categoryService.updateCategoryById(categoryId, categoryDTOForm));
     }
 

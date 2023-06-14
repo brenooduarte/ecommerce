@@ -45,10 +45,9 @@ public class UserService {
 		User newUser = userRepository.findByEmail(userDTO.getEmail());
 
 		if (newUser == null) {
-
 			newUser = new User();
-
 			BeanUtils.copyProperties(userDTO, newUser);
+
 			return userRepository.save(newUser);
 		} else {
 			throw new UserAlreadyExistsException();
