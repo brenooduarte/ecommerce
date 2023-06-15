@@ -2,6 +2,7 @@ package com.ecommerce.domain.models;
 
 import java.util.List;
 
+import com.ecommerce.domain.enums.UserType;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -22,6 +23,9 @@ public class User {
 
     @Column
     private String password;
+
+    @Column(name = "user_type")
+    private UserType userType;
 
     @OneToMany
     @JoinColumn(name = "user_id")

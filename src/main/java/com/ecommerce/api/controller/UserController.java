@@ -30,9 +30,8 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<List<UserDTOView>> list() {
-//        return new ResponseEntity<List<User>>(userRepository.findAll(), HttpStatus.OK);
-        //TODO resolver se irá existir um get all users e qual a intenção disso
-    	return null;
+        List<UserDTOView> usersDTO = userService.listAllUsers();
+        return ResponseEntity.ok(usersDTO);
     }
 
     @GetMapping("/{userId}")
