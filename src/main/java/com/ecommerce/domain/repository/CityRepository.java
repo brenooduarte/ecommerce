@@ -4,13 +4,12 @@ import com.ecommerce.domain.models.Address;
 import com.ecommerce.domain.models.City;
 import com.ecommerce.domain.models.State;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
 public interface CityRepository extends JpaRepository<City, Long> {
 
     City findByNameAndState(String name, State state);
+    List<City> findAll(Long cityId);
 
 }
