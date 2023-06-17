@@ -1,10 +1,15 @@
 package com.ecommerce.domain.service;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import com.ecommerce.domain.exceptions.EntityNotFoundException;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
@@ -35,10 +40,22 @@ public class UserService {
 	    return userDTOView;
 	}
 
-	public List<User> listAllUsers() {
-		return (List<User>) userRepository.findAll();
-		//TODO Retornar DTO VIEW
+	public List<UserDTOView> listAllUsers() {
+		List<User> users = userRepository.findAll();
+		List<UserDTOView> usersDTO = new ArrayList<>();
+
+		for (User user : users) {
+			try {
+				UserDTOView userDTO = new UserDTOView();
+				BeanUtils.copyProperties(user, userDTO);
+				usersDTO.add(userDTO);
+			} catch (BeansException e) {
+				e.printStackTrace();
+			}
+		}
+		return usersDTO;
 	}
+
 
 	public User createUser(UserDTOForm userDTO) throws UserAlreadyExistsException {
 
