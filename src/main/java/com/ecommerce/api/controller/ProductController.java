@@ -7,11 +7,13 @@ import com.ecommerce.domain.exceptions.ProductAlreadyExistsException;
 import com.ecommerce.domain.models.Assessment;
 import com.ecommerce.domain.models.Product;
 import com.ecommerce.domain.repository.ProductRepository;
+import com.ecommerce.domain.repository.WishlistRepository;
 import com.ecommerce.domain.service.ProductService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +32,9 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
+    @Autowired
+    private WishlistRepository wishlistRepository;
+
     @GetMapping
     public ResponseEntity<List<Product>> list() {
         return new ResponseEntity<List<Product>>(productRepository.findAll(), HttpStatus.OK);
@@ -45,6 +50,19 @@ public class ProductController {
     @GetMapping("/active")
     public ResponseEntity<List<ProductDTOView>> listAllActive() {
         return new ResponseEntity<List<ProductDTOView>>(productService.listAllActive(), HttpStatus.OK);
+    }
+
+    @GetMapping("/wishlist/user/{userId}")
+    public ResponseEntity<List<Product>> listAllProductsInWishlist(
+            @PathVariable Long userId) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(wishlistRepository.listAllProductsInWishlist(userId));
+
+        } catch (EmptyResultDataAccessException e) {
+            return ResponseEntity.noContent()
+                    .build();
+        }
     }
 
     @PostMapping
