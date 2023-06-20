@@ -12,6 +12,8 @@ import com.ecommerce.domain.repository.ProductRepository;
 import com.ecommerce.domain.repository.UserRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -43,11 +45,16 @@ public class ProductService {
 		List<Product> data = productRepository.listAllActive();
 		List<ProductDTOView> listView = new ArrayList<>();
 		for (Product product : data) {
-			ProductDTOView productView = new ProductDTOView();
-			BeanUtils.copyProperties(product, productView);
+			ProductDTOView productView = new ProductDTOView(product);
 			listView.add(productView);
 		}
 		return listView;
+	}
+
+	public Page<ProductDTOView> listAllActive2(PageRequest pageRequest) {
+		Page<Product> page = productRepository.findAll(pageRequest);
+		productRepository.listAllActive2(page.stream().toList());
+		return page.map(x -> new ProductDTOView(x));
 	}
 
 	public ProductDTOView createProduct(Product product, Long categoryId) throws ProductAlreadyExistsException {
@@ -65,10 +72,7 @@ public class ProductService {
 		category.addProduct(product);
 		categoryRepository.save(category);
 
-		ProductDTOView productDTOView = new ProductDTOView();
-		BeanUtils.copyProperties(product, productDTOView);
-
-		return productDTOView;
+		return new ProductDTOView(product);
 	}
 
 	public Product updateProduct(Product newProduct) {

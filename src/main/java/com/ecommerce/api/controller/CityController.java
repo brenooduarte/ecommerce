@@ -24,10 +24,10 @@ public class CityController {
     @Autowired
     private CityService cityService;
 
-    @GetMapping("/city/{cityId}")
-    public ResponseEntity<List<City>> list(@PathVariable Long cityId) {
-        return new ResponseEntity<>(cityRepository.findAll(cityId), HttpStatus.OK);
-    }
+//    @GetMapping("/city/{cityId}")
+//    public ResponseEntity<List<City>> list(@PathVariable Long cityId) {
+//        return new ResponseEntity<>(cityRepository.findAll(cityId), HttpStatus.OK);
+//    }
 
     @DeleteMapping("/{cityId}")
     public ResponseEntity<?> delete(@PathVariable Long id) {

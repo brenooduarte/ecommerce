@@ -14,6 +14,8 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -52,6 +54,16 @@ public class ProductController {
         return new ResponseEntity<List<ProductDTOView>>(productService.listAllActive(), HttpStatus.OK);
     }
 
+    @GetMapping("/active2")
+    public ResponseEntity<Page<ProductDTOView>> listAllActive2(
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "size", defaultValue = "10") Integer size
+    ) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<ProductDTOView> list = productService.listAllActive2(pageRequest);
+        return ResponseEntity.ok(list);
+    }
+
     @GetMapping("/wishlist/user/{userId}")
     public ResponseEntity<List<Product>> listAllProductsInWishlist(
             @PathVariable Long userId) {
@@ -87,8 +99,9 @@ public class ProductController {
             @PathVariable Long userId) {
 
         try {
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(productService.addAssessment(assessment, productId, userId));
+
+            productService.addAssessment(assessment, productId, userId);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
 
         } catch (EntityNotFoundException e) {
             return ResponseEntity.badRequest()

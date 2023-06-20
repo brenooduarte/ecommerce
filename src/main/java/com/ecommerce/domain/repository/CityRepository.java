@@ -10,6 +10,6 @@ import java.util.List;
 public interface CityRepository extends JpaRepository<City, Long> {
 
     City findByNameAndState(String name, State state);
-    List<City> findAll(Long cityId);
+//    List<City> findAll(Long cityId);
 
 }

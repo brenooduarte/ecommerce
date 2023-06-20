@@ -55,9 +55,7 @@ public class CategoryService {
 
         return category.getProducts().stream()
                 .map(product -> {
-                    ProductDTOView productDTOView = new ProductDTOView();
-                    BeanUtils.copyProperties(product, productDTOView);
-                    return productDTOView;
+                    return new ProductDTOView(product);
                 })
                 .collect(Collectors.toList());
     }
