@@ -7,6 +7,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.ecommerce.domain.enums.UserType;
 import com.ecommerce.domain.exceptions.EntityNotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
@@ -64,6 +65,12 @@ public class UserService {
 		if (newUser == null) {
 			newUser = new User();
 			BeanUtils.copyProperties(userDTO, newUser);
+
+			if (userDTO.getUserType() != null) {
+				newUser.setUserType(userDTO.getUserType());
+			} else {
+				newUser.setUserType(UserType.USER);
+			}
 
 			return userRepository.save(newUser);
 		} else {
