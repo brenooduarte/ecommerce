@@ -60,6 +60,16 @@ public class CategoryService {
                 .collect(Collectors.toList());
     }
 
+    public CategoryDTOView getCategoryById(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new NoSuchElementException("Category not found"));
+
+        CategoryDTOView categoryDTOView = new CategoryDTOView();
+        BeanUtils.copyProperties(category, categoryDTOView);
+        return categoryDTOView;
+    }
+
+
     public CategoryDTOView updateCategoryById(Long categoryId, CategoryDTOForm categoryDTOForm) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new NoSuchElementException("Category not found"));

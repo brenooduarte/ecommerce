@@ -35,6 +35,12 @@ public class CategoryController {
         return ResponseEntity.ok().body(productsDTOViews);
     }
 
+    @GetMapping("/{categoryId}")
+    public ResponseEntity<CategoryDTOView> getCategoryById(@PathVariable Long categoryId) {
+        CategoryDTOView categoryDTOView = categoryService.getCategoryById(categoryId);
+        return ResponseEntity.ok().body(categoryDTOView);
+    }
+
     @PostMapping
     public ResponseEntity<?> addCategory(@RequestBody CategoryDTOForm categoryDTOForm) {
         return ResponseEntity.status(HttpStatus.CREATED)
