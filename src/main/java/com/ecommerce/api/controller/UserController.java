@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/users")
@@ -39,7 +40,7 @@ public class UserController {
     	UserDTOView userDTOView = userService.getById(userId);
         return ResponseEntity.ok(userDTOView);
     }
-    
+
     @GetMapping("/active")
     public ResponseEntity<List<UserDTOView>> listAllActive() {
 //        return new ResponseEntity<List<UserDTOView>>(userService.listAllActive(), HttpStatus.OK);
@@ -50,13 +51,15 @@ public class UserController {
     @PostMapping
     public ResponseEntity<?> add(@RequestBody UserDTOForm userDTO) throws UserAlreadyExistsException {
         try {
-            userService.createUser(userDTO);
+            User newUser = userService.createUser(userDTO);
+            UserDTOView userDTOView = new UserDTOView();
+            BeanUtils.copyProperties(newUser, userDTOView);
 
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .build();
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.badRequest()
-                    .body(e.getMessage());
+                    .body(userDTOView);
+        } catch (UserAlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("User already exists.");
         }
     }
 
@@ -65,12 +68,14 @@ public class UserController {
             @PathVariable Long userId,
             @RequestBody UserDTOForm userDTOForm) {
 
-		User user = userService.updateUser(userId, userDTOForm);
-
-        UserDTOView userDTOView = new UserDTOView();
-        BeanUtils.copyProperties(user, userDTOView);
-
-		return ResponseEntity.ok(userDTOView);
+        try {
+            User updatedUser = userService.updateUser(userId, userDTOForm);
+            UserDTOView userDTOView = new UserDTOView();
+            BeanUtils.copyProperties(updatedUser, userDTOView);
+            return ResponseEntity.ok(userDTOView);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
 	}
 
     @DeleteMapping("/{userId}")

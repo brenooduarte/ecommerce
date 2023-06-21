@@ -1,5 +1,6 @@
 package com.ecommerce.domain.dto.form;
 
+import com.ecommerce.domain.enums.UserType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -16,5 +17,8 @@ public class UserDTOForm {
 
 	@NotBlank
     private String password;
+
+	@NotBlank
+	private UserType userType;
     
 }
