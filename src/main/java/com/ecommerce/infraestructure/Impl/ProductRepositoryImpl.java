@@ -2,6 +2,7 @@ package com.ecommerce.infraestructure.Impl;
 
 import com.ecommerce.domain.models.Assessment;
 import com.ecommerce.domain.models.Product;
+import com.ecommerce.domain.models.User;
 import com.ecommerce.infraestructure.query.ProductRepositoryQueries;
 import com.ecommerce.utils.GlobalConstants;
 import jakarta.persistence.EntityManager;
@@ -15,6 +16,7 @@ import jakarta.persistence.criteria.Root;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Repository
 public class ProductRepositoryImpl implements ProductRepositoryQueries {
@@ -24,40 +26,41 @@ public class ProductRepositoryImpl implements ProductRepositoryQueries {
 	EntityManager entityManager;
 	
 	@Override
-	public List<Product> listAllActive() {
-		StringBuilder consulta = new StringBuilder();
-		
-		consulta.append("SELECT * ")
-		.append("FROM tb_product p ")
-		.append("JOIN FETCH p.assessments ")
-		.append("WHERE p.status = :status");
-		
-		Query query = entityManager.createNativeQuery(consulta.toString(), Product.class);
-		query.setParameter("status", GlobalConstants.ACTIVE);
-		
-		
-		return query.getResultList();
-	}
-
-	@Override
-	public List<Product> listAllActive2(List<Product> products) {
+	public List<Product> listAllActive(List<Product> products) {
 
 		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-		CriteriaQuery<Product> criteriaQueryProduct = criteriaBuilder.createQuery(Product.class);
+		CriteriaQuery<Product> criteriaQuery = criteriaBuilder.createQuery(Product.class);
 
-		Root<Product> productRoot = criteriaQueryProduct.from(Product.class);
+		Root<Product> productRoot = criteriaQuery.from(Product.class);
 
-		criteriaQueryProduct.select(productRoot);
+		criteriaQuery.select(productRoot);
 
-		criteriaQueryProduct.where(
+		criteriaQuery.where(
 				criteriaBuilder.equal(productRoot.get("status"), GlobalConstants.ACTIVE),
 				productRoot.in(products));
 		productRoot.fetch("assessments", JoinType.LEFT);
 
-		TypedQuery<Product> query = entityManager.createQuery(criteriaQueryProduct);
+		TypedQuery<Product> query = entityManager.createQuery(criteriaQuery);
 		return query.getResultList();
 
 	}
 
+	@Override
+	public Assessment addAssessment(Assessment assessment, Long productId, Long userId) {
+
+//		Product product = productRepository.findById(productId)
+//				.orElseThrow(() -> new NoSuchElementException("Product not found"));
+//
+//		User user = userRepository.findById(userId)
+//				.orElseThrow(() -> new NoSuchElementException("User not found"));
+//
+//		user.addAssessment(assessment);
+//		product.addAssessment(assessment);
+//		assessmentRepository.save(assessment);
+
+
+
+		return null;
+	}
 
 }

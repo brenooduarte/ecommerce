@@ -1,7 +1,6 @@
 package com.ecommerce.infraestructure.Impl;
 
 import com.ecommerce.domain.models.Product;
-import com.ecommerce.domain.models.User;
 import com.ecommerce.domain.models.Wishlist;
 import com.ecommerce.infraestructure.query.WishlistRepositoryQueries;
 import jakarta.persistence.EntityManager;
@@ -34,11 +33,7 @@ public class WishlistRepositoryImpl implements WishlistRepositoryQueries {
 
         TypedQuery<Product> query = entityManager.createQuery(criteriaQuery);
 
-        List<Product> products = query.getResultList();
-
-        entityManager.close();
-
-        return products;
+        return query.getResultList();
 
     }
 }

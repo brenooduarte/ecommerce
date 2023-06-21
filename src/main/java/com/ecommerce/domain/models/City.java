@@ -2,10 +2,12 @@ package com.ecommerce.domain.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
 @Table(name = "tb_city")
+@NoArgsConstructor
 public class City {
 
     @Id
@@ -22,9 +24,6 @@ public class City {
     public City(String name, State state) {
         this.name = name;
         this.state = state;
-    }
-
-    public City() {
     }
 
 }

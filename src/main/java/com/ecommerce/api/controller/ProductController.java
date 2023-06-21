@@ -50,17 +50,12 @@ public class ProductController {
     }
     
     @GetMapping("/active")
-    public ResponseEntity<List<ProductDTOView>> listAllActive() {
-        return new ResponseEntity<List<ProductDTOView>>(productService.listAllActive(), HttpStatus.OK);
-    }
-
-    @GetMapping("/active2")
-    public ResponseEntity<Page<ProductDTOView>> listAllActive2(
+    public ResponseEntity<Page<ProductDTOView>> listAllActive(
             @RequestParam(value = "page", defaultValue = "0") Integer page,
             @RequestParam(value = "size", defaultValue = "10") Integer size
     ) {
         PageRequest pageRequest = PageRequest.of(page, size);
-        Page<ProductDTOView> list = productService.listAllActive2(pageRequest);
+        Page<ProductDTOView> list = productService.listAllActive(pageRequest);
         return ResponseEntity.ok(list);
     }
 
@@ -99,9 +94,8 @@ public class ProductController {
             @PathVariable Long userId) {
 
         try {
-
-            productService.addAssessment(assessment, productId, userId);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(productService.addAssessment(assessment, productId, userId));
 
         } catch (EntityNotFoundException e) {
             return ResponseEntity.badRequest()

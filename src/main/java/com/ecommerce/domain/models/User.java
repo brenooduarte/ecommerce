@@ -5,10 +5,12 @@ import java.util.List;
 import com.ecommerce.domain.enums.UserType;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @Table(name = "tb_user")
+@NoArgsConstructor
 public class User {
 
     @Id

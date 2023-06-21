@@ -10,14 +10,11 @@ import com.ecommerce.domain.repository.AssessmentRepository;
 import com.ecommerce.domain.repository.CategoryRepository;
 import com.ecommerce.domain.repository.ProductRepository;
 import com.ecommerce.domain.repository.UserRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -41,19 +38,9 @@ public class ProductService {
 		return userOptional.orElse(null);
 	}
 
-	public List<ProductDTOView> listAllActive() {
-		List<Product> data = productRepository.listAllActive();
-		List<ProductDTOView> listView = new ArrayList<>();
-		for (Product product : data) {
-			ProductDTOView productView = new ProductDTOView(product);
-			listView.add(productView);
-		}
-		return listView;
-	}
-
-	public Page<ProductDTOView> listAllActive2(PageRequest pageRequest) {
+	public Page<ProductDTOView> listAllActive(PageRequest pageRequest) {
 		Page<Product> page = productRepository.findAll(pageRequest);
-		productRepository.listAllActive2(page.stream().toList());
+		productRepository.listAllActive(page.stream().toList());
 		return page.map(x -> new ProductDTOView(x));
 	}
 

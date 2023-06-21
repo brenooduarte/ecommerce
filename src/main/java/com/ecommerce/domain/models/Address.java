@@ -2,10 +2,12 @@ package com.ecommerce.domain.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @Table(name = "tb_address")
+@NoArgsConstructor
 public class Address {
 
     @Id
@@ -33,9 +35,6 @@ public class Address {
 
     public Address(City city) {
         this.city = city;
-    }
-
-    public Address() {
     }
 
 }

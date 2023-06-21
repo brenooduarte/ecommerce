@@ -9,6 +9,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Root;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
@@ -34,14 +35,11 @@ public class AddressRepositoryImpl implements AddressRepositoryQueries {
 
         criteriaQuery.where(criteriaBuilder.equal(addressRoot.get("id"), userAddressRoot.get("address").get("id")),
                 criteriaBuilder.equal(userAddressRoot.get("user").get("id"), userId));
+                addressRoot.fetch("city", JoinType.LEFT);
 
         TypedQuery<Address> query = entityManager.createQuery(criteriaQuery);
 
-        List<Address> addresses = query.getResultList();
-
-        entityManager.close();
-
-        return addresses;
+        return query.getResultList();
 
     }
 
@@ -58,8 +56,6 @@ public class AddressRepositoryImpl implements AddressRepositoryQueries {
 
         criteriaQuery.where(criteriaBuilder.equal(addressRoot.get("id"), addressTypeId),
                 criteriaBuilder.equal(userRoot.get("id"), userId));
-
-        entityManager.close();
 
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }
@@ -78,8 +74,6 @@ public class AddressRepositoryImpl implements AddressRepositoryQueries {
         criteriaQuery.where(criteriaBuilder.equal(addressRoot.get("id"), userAddressRoot.get("address").get("id")),
                 criteriaBuilder.equal(userAddressRoot.get("user").get("id"), userId),
                 criteriaBuilder.equal(addressRoot.get("id"), addressId));
-
-        entityManager.close();
 
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

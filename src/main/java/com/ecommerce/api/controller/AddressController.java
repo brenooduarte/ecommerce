@@ -87,12 +87,12 @@ public class AddressController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody AddressDTOForm addressDTOForm) {
+    public ResponseEntity<?> update(
+            @PathVariable Long id,
+            @RequestBody AddressDTOForm addressDTOForm) {
         try {
-            addressService.updateAddress(addressDTOForm, id);
-
             return ResponseEntity.ok()
-                    .build();
+                    .body(addressService.updateAddress(addressDTOForm, id));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.badRequest()
                     .body(e.getMessage());

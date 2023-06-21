@@ -8,8 +8,8 @@ import com.ecommerce.domain.repository.OrderRepository;
 import com.ecommerce.domain.repository.ProductOrderRepository;
 import com.ecommerce.domain.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -44,8 +44,7 @@ public class OrderService {
 		for (Product product : orderDTOForm.getProducts()) {
 			subtotal = subtotal.add(product.getPrice());
 		}
-		Order order = new Order(subtotal, freightCharge, subtotal.add(freightCharge));
-		BeanUtils.copyProperties(orderDTOForm, order, "delivery_address_id");
+		Order order = new Order(subtotal, freightCharge, subtotal.add(freightCharge), orderDTOForm);
 
 		Address deliveryAddress = addressRepository.findById(orderDTOForm.getDeliveryAddressId())
 				.orElseThrow(() -> new EntityNotFoundException("Address not exists"));
@@ -73,7 +72,7 @@ public class OrderService {
 		if (Objects.equals(user.getId(), userId)) {
 			responseEntity = ResponseEntity.ok(order.get());
 		} else {
-			responseEntity = ResponseEntity.status(403).build();
+			responseEntity = ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 		}
 
 		return responseEntity;
@@ -110,7 +109,7 @@ public class OrderService {
 		return ResponseEntity.ok(order);
 	}
 
-	public List<Order> findAllByUserId(Long userId) {
-		return orderRepository.findAllByUserId(userId);
+	public List<Order> listAll(Long userId) {
+		return orderRepository.listAll(userId);
 	}
 }

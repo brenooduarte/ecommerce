@@ -1,15 +1,17 @@
 package com.ecommerce.domain.dto.view;
 
-import java.math.BigDecimal;
-import java.util.List;
-
 import com.ecommerce.domain.models.Assessment;
 import com.ecommerce.domain.models.Product;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 @Data
 public class ProductDTOView {
+
+    private Long id;
 
     private String name;
 

@@ -26,11 +26,14 @@ public class OrderController {
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Order>> listAll(@PathVariable Long userId) {
-        return new ResponseEntity<>(orderService.findAllByUserId(userId), HttpStatus.OK);
+       return ResponseEntity.ok(orderService.listAll(userId));
+//        return ResponseEntity.ok(orderRepository.findAll());
     }
 
     @GetMapping("/{orderId}/user/{userId}")
-    public ResponseEntity<Order> findById(@PathVariable Long orderId, @PathVariable Long userId) {
+    public ResponseEntity<Order> findById(
+            @PathVariable Long orderId,
+            @PathVariable Long userId) {
         return orderService.findById(orderId, userId);
     }
 
@@ -49,7 +52,9 @@ public class OrderController {
 
     @PatchMapping("/{orderId}/user/{userId}")
     public ResponseEntity<Order> setStatusOrder(
-            @PathVariable Long orderId, @PathVariable Long userId, @RequestBody String status) {
+            @PathVariable Long orderId,
+            @PathVariable Long userId,
+            @RequestBody String status) {
         return orderService.setStatusOrder(orderId, userId, status);
     }
 

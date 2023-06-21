@@ -3,6 +3,7 @@ package com.ecommerce.domain.service;
 import com.ecommerce.domain.dto.form.CategoryDTOForm;
 import com.ecommerce.domain.dto.view.CategoryDTOView;
 import com.ecommerce.domain.dto.view.ProductDTOView;
+import com.ecommerce.domain.exceptions.EntityNotFoundException;
 import com.ecommerce.domain.models.Category;
 import com.ecommerce.domain.models.Product;
 import com.ecommerce.domain.repository.CategoryRepository;
@@ -11,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,7 +35,7 @@ public class CategoryService {
 
     public List<Product> listAllProductsByCategory(Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new NoSuchElementException("Category not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
         return category.getProducts();
     }
 
@@ -51,18 +51,16 @@ public class CategoryService {
 
     public List<ProductDTOView> getAllProductsByCategory(Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new NoSuchElementException("Category not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
 
         return category.getProducts().stream()
-                .map(product -> {
-                    return new ProductDTOView(product);
-                })
+                .map(ProductDTOView::new)
                 .collect(Collectors.toList());
     }
 
     public CategoryDTOView updateCategoryById(Long categoryId, CategoryDTOForm categoryDTOForm) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new NoSuchElementException("Category not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
 
         BeanUtils.copyProperties(categoryDTOForm, category);
 
