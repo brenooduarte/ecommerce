@@ -15,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -60,6 +62,17 @@ public class ProductService {
 		categoryRepository.save(category);
 
 		return new ProductDTOView(product);
+	}
+
+	public List<ProductDTOView> viewProductByCategory(Category categoryId) {
+		List<Product> products = productRepository.findByCategoryId(categoryId);
+		List<ProductDTOView> productDTOViews = new ArrayList<>();
+
+		for (Product product : products) {
+			productDTOViews.add(new ProductDTOView(product));
+		}
+
+		return productDTOViews;
 	}
 
 	public Product updateProduct(Product newProduct) {

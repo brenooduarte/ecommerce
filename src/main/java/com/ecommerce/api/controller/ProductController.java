@@ -5,6 +5,7 @@ import com.ecommerce.domain.dto.view.ProductDTOView;
 import com.ecommerce.domain.exceptions.EntityInUseException;
 import com.ecommerce.domain.exceptions.ProductAlreadyExistsException;
 import com.ecommerce.domain.models.Assessment;
+import com.ecommerce.domain.models.Category;
 import com.ecommerce.domain.models.Product;
 import com.ecommerce.domain.repository.ProductRepository;
 import com.ecommerce.domain.repository.WishlistRepository;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/products")
@@ -70,6 +72,15 @@ public class ProductController {
             return ResponseEntity.noContent()
                     .build();
         }
+    }
+
+    @GetMapping("/categories/{categoryId}/products")
+    public ResponseEntity<List<ProductDTOView>> viewProductByCategory(@PathVariable Category categoryId) {
+        List<Product> products = productRepository.findByCategoryId(categoryId);
+        List<ProductDTOView> productDTOViews = products.stream()
+                .map(ProductDTOView::new)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(productDTOViews);
     }
 
     @PostMapping

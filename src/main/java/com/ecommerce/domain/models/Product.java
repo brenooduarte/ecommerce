@@ -44,6 +44,10 @@ public class Product {
     @JoinColumn(name = "product_id")
     private List<Assessment> assessments;
 
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+
     public void addAssessment(Assessment assessment) {
         this.assessments.add(assessment);
     }
