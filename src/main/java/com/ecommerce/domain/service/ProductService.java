@@ -1,5 +1,6 @@
 package com.ecommerce.domain.service;
 
+import com.ecommerce.domain.dto.form.ProductDTOForm;
 import com.ecommerce.domain.dto.view.ProductDTOView;
 import com.ecommerce.domain.exceptions.ProductAlreadyExistsException;
 import com.ecommerce.domain.models.Assessment;
@@ -10,6 +11,7 @@ import com.ecommerce.domain.repository.AssessmentRepository;
 import com.ecommerce.domain.repository.CategoryRepository;
 import com.ecommerce.domain.repository.ProductRepository;
 import com.ecommerce.domain.repository.UserRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -46,16 +48,18 @@ public class ProductService {
 		return page.map(x -> new ProductDTOView(x));
 	}
 
-	public ProductDTOView createProduct(Product product, Long categoryId) throws ProductAlreadyExistsException {
+	public ProductDTOView createProduct(ProductDTOForm productDTOForm) throws ProductAlreadyExistsException {
+		Product product = new Product();
+		BeanUtils.copyProperties(productDTOForm, product, "category_id");
+
+		Category category = categoryRepository.findById(productDTOForm.getCategoryId())
+				.orElseThrow(() -> new NoSuchElementException("Category not found"));
 
 		Product productFound = productRepository.findByName(product.getName());
 
 		if (productFound != null) {
 			throw new ProductAlreadyExistsException("Product already exists");
 		}
-
-		Category category = categoryRepository.findById(categoryId)
-				.orElseThrow(() -> new NoSuchElementException("Category not found"));
 
 		product = productRepository.save(product);
 		category.addProduct(product);
@@ -64,7 +68,7 @@ public class ProductService {
 		return new ProductDTOView(product);
 	}
 
-	public List<ProductDTOView> viewProductByCategory(Category categoryId) {
+	public List<ProductDTOView> viewProductByCategory(Long categoryId) {
 		List<Product> products = productRepository.findByCategoryId(categoryId);
 		List<ProductDTOView> productDTOViews = new ArrayList<>();
 

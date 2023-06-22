@@ -74,8 +74,8 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/categories/{categoryId}/products")
-    public ResponseEntity<List<ProductDTOView>> viewProductByCategory(@PathVariable Category categoryId) {
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<List<ProductDTOView>> viewProductByCategory(@PathVariable Long categoryId) {
         List<Product> products = productRepository.findByCategoryId(categoryId);
         List<ProductDTOView> productDTOViews = products.stream()
                 .map(ProductDTOView::new)
@@ -86,12 +86,9 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<?> createProduct(@RequestBody ProductDTOForm productDTOForm) {
         try {
-            Product product = new Product();
-            BeanUtils.copyProperties(productDTOForm, product, "category_id");
-
+            ProductDTOView createdProduct = productService.createProduct(productDTOForm);
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(productService.createProduct(product, productDTOForm.getCategoryId()));
-
+                    .body(createdProduct);
         } catch (ProductAlreadyExistsException e) {
             return ResponseEntity.badRequest()
                     .body(e.getMessage());
