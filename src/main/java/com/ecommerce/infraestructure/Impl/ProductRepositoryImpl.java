@@ -1,22 +1,21 @@
 package com.ecommerce.infraestructure.Impl;
 
+import java.util.List;
+
+import org.springframework.stereotype.Repository;
+
 import com.ecommerce.domain.models.Assessment;
 import com.ecommerce.domain.models.Product;
-import com.ecommerce.domain.models.User;
 import com.ecommerce.infraestructure.query.ProductRepositoryQueries;
 import com.ecommerce.utils.GlobalConstants;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Root;
-import org.springframework.stereotype.Repository;
-
-import java.util.List;
-import java.util.NoSuchElementException;
 
 @Repository
 public class ProductRepositoryImpl implements ProductRepositoryQueries {

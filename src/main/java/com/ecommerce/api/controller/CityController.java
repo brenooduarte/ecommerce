@@ -1,17 +1,17 @@
 package com.ecommerce.api.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.ecommerce.domain.exceptions.EntityNotFoundException;
-import com.ecommerce.domain.models.City;
-import com.ecommerce.domain.repository.AddressRepository;
 import com.ecommerce.domain.repository.CityRepository;
 import com.ecommerce.domain.service.CityService;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/cities")

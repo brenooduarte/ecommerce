@@ -1,15 +1,15 @@
 package com.ecommerce.domain.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.stereotype.Service;
+
 import com.ecommerce.domain.exceptions.CityNotFoundException;
 import com.ecommerce.domain.exceptions.EntityInUseException;
 import com.ecommerce.domain.models.City;
 import com.ecommerce.domain.models.State;
 import com.ecommerce.domain.repository.CityRepository;
-import com.ecommerce.domain.repository.StateRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.stereotype.Service;
 
 @Service
 public class CityService {
