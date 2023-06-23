@@ -1,13 +1,25 @@
 package com.ecommerce.domain.models;
 
-import com.ecommerce.domain.dto.form.OrderDTOForm;
-import com.ecommerce.domain.enums.StatusOrder;
-import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
+
+import com.ecommerce.domain.dto.form.OrderDTOForm;
+import com.ecommerce.domain.enums.StatusOrder;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
@@ -47,6 +59,9 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
     private User customer;
+
+    @OneToMany(mappedBy = "order")
+    private List<ProductOrder> products;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status_order", nullable = false)

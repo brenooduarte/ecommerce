@@ -47,6 +47,9 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
+    
+    @OneToMany(mappedBy = "product")
+    private List<ProductOrder> orders;
 
     public void addAssessment(Assessment assessment) {
         this.assessments.add(assessment);
