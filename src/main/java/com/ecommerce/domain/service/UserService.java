@@ -57,6 +57,19 @@ public class UserService {
 		return usersDTO;
 	}
 
+	public List<UserDTOView> listAdmin(Long userId) {
+		User admin = userRepository.findByIdAndUserType(userId, UserType.ADMIN);
+		List<UserDTOView> adminDTOList = new ArrayList<>();
+
+		if (admin == null) {
+			throw new EntityNotFoundException("THIS USER IS NOT ADMIN OR DOES NOT EXIST");
+		}
+
+		UserDTOView adminDTO = new UserDTOView();
+		BeanUtils.copyProperties(admin, adminDTO);
+		adminDTOList.add(adminDTO);
+		return adminDTOList;
+	}
 
 	public User createUser(UserDTOForm userDTO) throws UserAlreadyExistsException {
 
