@@ -1,25 +1,22 @@
 package com.ecommerce.domain.service;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
+import com.ecommerce.domain.dto.form.UserDTOForm;
+import com.ecommerce.domain.dto.view.UserDTOView;
 import com.ecommerce.domain.enums.UserType;
-import com.ecommerce.domain.exceptions.EntityNotFoundException;
+import com.ecommerce.domain.exceptions.UserAlreadyExistsException;
+import com.ecommerce.domain.models.User;
+import com.ecommerce.domain.repository.UserRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
-import com.ecommerce.domain.dto.form.UserDTOForm;
-import com.ecommerce.domain.dto.view.UserDTOView;
-import com.ecommerce.domain.exceptions.UserAlreadyExistsException;
-import com.ecommerce.domain.models.User;
-import com.ecommerce.domain.repository.UserRepository;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+
 
 @Service
 public class UserService {
