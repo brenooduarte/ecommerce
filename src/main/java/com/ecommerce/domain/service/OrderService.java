@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -56,8 +55,6 @@ public class OrderService {
 		Address deliveryAddress = addressRepository.findById(orderDTOForm.getDeliveryAddressId())
 				.orElseThrow(() -> new EntityNotFoundException("Address not exists"));
 
-
-
 		order.setDeliveryAddress(deliveryAddress);
 		orderRepository.save(order);
 
@@ -67,34 +64,28 @@ public class OrderService {
 
 	}
 
-	public ResponseEntity<Order> findById(Long orderId, Long userId) {
+	public ResponseEntity<OrderDTOView> findById(Long orderId, Long userId) {
 
 		Optional<Order> order = orderRepository.findById(orderId);
-		ResponseEntity<Order> responseEntity;
 
-		if (order.isEmpty()){
-			responseEntity = ResponseEntity.notFound().build();
-		}
-
-		User user = order.get().getCustomer();
-
-		if (Objects.equals(user.getId(), userId)) {
-			responseEntity = ResponseEntity.ok(order.get());
+		if (order.isPresent()) {
+			return ResponseEntity.ok(new OrderDTOView(order.get()));
 		} else {
-			responseEntity = ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
-
-		return responseEntity;
 	}
 
-	public ResponseEntity<Order> setStatusOrder(Long orderId, Long userId, String status) {
+	public ResponseEntity<Order> setStatusOrder(Long orderId, String status) {
 
 		status = status.toUpperCase();
 
-		Order order = findById(orderId, userId).getBody();
+		Optional<Order> orderOptional = orderRepository.findById(orderId);
+		Order order;
 
-		if (order == null) {
+		if (orderOptional.isEmpty()) {
 			return ResponseEntity.notFound().build();
+		} else {
+			order = orderOptional.get();
 		}
 
 		switch (status) {

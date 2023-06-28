@@ -31,8 +31,6 @@ public class OrderDTOView {
 
     private Address deliveryAddress;
 
-    private UserDTOView customer;
-
     private List<ProductDTOView> products;
 
     private StatusOrder statusOrder;
@@ -46,7 +44,6 @@ public class OrderDTOView {
         this.cancellationDate = order.getCancellationDate();
         this.deliveryDate = order.getDeliveryDate();
         this.deliveryAddress = order.getDeliveryAddress();
-        this.customer = new UserDTOView(order.getCustomer());
         this.products = parseToProductDTOView(order.getProductOrders());
         this.statusOrder = order.getStatusOrder();
     }

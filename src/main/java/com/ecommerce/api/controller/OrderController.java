@@ -40,7 +40,7 @@ public class OrderController {
     }
 
     @GetMapping("/{orderId}/user/{userId}")
-    public ResponseEntity<Order> findById(
+    public ResponseEntity<OrderDTOView> findById(
             @PathVariable Long orderId,
             @PathVariable Long userId) {
         return orderService.findById(orderId, userId);
@@ -59,12 +59,11 @@ public class OrderController {
         }
     }
 
-    @PatchMapping("/{orderId}/user/{userId}")
+    @PatchMapping("/{orderId}")
     public ResponseEntity<Order> setStatusOrder(
             @PathVariable Long orderId,
-            @PathVariable Long userId,
             @RequestBody String status) {
-        return orderService.setStatusOrder(orderId, userId, status);
+        return orderService.setStatusOrder(orderId, status);
     }
 
 }
