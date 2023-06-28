@@ -55,7 +55,6 @@ public class Product {
     private List<ProductOrder> orders;
 
     public Product(ProductDTOForm productDTOForm){
-        this.id = productDTOForm.getId();
         this.name = productDTOForm.getName();
         this.price = productDTOForm.getPrice();
         this.description = productDTOForm.getDescription();

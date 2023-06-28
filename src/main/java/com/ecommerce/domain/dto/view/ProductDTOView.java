@@ -31,6 +31,7 @@ public class ProductDTOView {
     private List<Assessment> assessments;
 
     public ProductDTOView(Product product) {
+        this.id = product.getId();
         this.name = product.getName();
         this.price = product.getPrice();
         this.description = product.getDescription();

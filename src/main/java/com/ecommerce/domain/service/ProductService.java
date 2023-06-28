@@ -45,7 +45,7 @@ public class ProductService {
 	public Page<ProductDTOView> listAllActive(PageRequest pageRequest) {
 		Page<Product> page = productRepository.findAll(pageRequest);
 		productRepository.listAllActive(page.stream().toList());
-		return page.map(x -> new ProductDTOView(x));
+		return page.map(ProductDTOView::new);
 	}
 
 	public ProductDTOView createProduct(ProductDTOForm productDTOForm) throws ProductAlreadyExistsException {

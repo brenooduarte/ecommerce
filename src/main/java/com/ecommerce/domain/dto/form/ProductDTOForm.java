@@ -8,8 +8,6 @@ import java.math.BigDecimal;
 @Data
 public class ProductDTOForm {
 
-    private Long id;
-
     private String name;
 
     private BigDecimal price;
