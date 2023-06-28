@@ -1,29 +1,26 @@
 package com.ecommerce.domain.service;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
+import com.ecommerce.domain.dto.form.OrderDTOForm;
+import com.ecommerce.domain.dto.form.ProductDTOForm;
+import com.ecommerce.domain.dto.view.OrderDTOView;
+import com.ecommerce.domain.enums.StatusOrder;
+import com.ecommerce.domain.models.*;
+import com.ecommerce.domain.repository.AddressRepository;
+import com.ecommerce.domain.repository.OrderRepository;
+import com.ecommerce.domain.repository.ProductOrderRepository;
+import com.ecommerce.domain.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.ecommerce.domain.dto.form.OrderDTOForm;
-import com.ecommerce.domain.enums.StatusOrder;
-import com.ecommerce.domain.models.Address;
-import com.ecommerce.domain.models.Order;
-import com.ecommerce.domain.models.Product;
-import com.ecommerce.domain.models.ProductOrder;
-import com.ecommerce.domain.models.User;
-import com.ecommerce.domain.repository.AddressRepository;
-import com.ecommerce.domain.repository.OrderRepository;
-import com.ecommerce.domain.repository.ProductOrderRepository;
-import com.ecommerce.domain.repository.UserRepository;
-
-import jakarta.persistence.EntityNotFoundException;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -47,19 +44,25 @@ public class OrderService {
 		// TODO: Calculate freight charge
 		BigDecimal freightCharge = BigDecimal.valueOf(100);
 
-		for (Product product : orderDTOForm.getProducts()) {
+		for (ProductDTOForm product : orderDTOForm.getProducts()) {
 			subtotal = subtotal.add(product.getPrice());
 		}
-		Order order = new Order(subtotal, freightCharge, subtotal.add(freightCharge), orderDTOForm);
+
+		User user = userRepository.findById(orderDTOForm.getCustomerId())
+				.orElseThrow(() -> new EntityNotFoundException("User not exists"));
+
+		Order order = new Order(user, subtotal, freightCharge, subtotal.add(freightCharge), orderDTOForm);
 
 		Address deliveryAddress = addressRepository.findById(orderDTOForm.getDeliveryAddressId())
 				.orElseThrow(() -> new EntityNotFoundException("Address not exists"));
 
+
+
 		order.setDeliveryAddress(deliveryAddress);
 		orderRepository.save(order);
 
-		for (Product product : orderDTOForm.getProducts()) {
-			productOrderRepository.save(new ProductOrder(order, product));
+		for (ProductDTOForm productDTOForm : orderDTOForm.getProducts()) {
+			productOrderRepository.save(new ProductOrder(order, new Product(productDTOForm)));
 		}
 
 	}
@@ -115,7 +118,15 @@ public class OrderService {
 		return ResponseEntity.ok(order);
 	}
 
-	public List<Order> listAll(Long userId) {
-		return orderRepository.listAll(userId);
+	public List<OrderDTOView> listAll(Long userId) {
+		List<Order> orders = orderRepository.listAll(userId);
+		return parseToOrderDTOView(orders);
 	}
+
+	private List<OrderDTOView> parseToOrderDTOView(List<Order> orders) {
+		return orders.stream()
+				.map(OrderDTOView::new)
+				.collect(Collectors.toList());
+	}
+
 }

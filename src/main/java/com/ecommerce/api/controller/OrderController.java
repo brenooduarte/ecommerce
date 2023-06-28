@@ -2,6 +2,7 @@ package com.ecommerce.api.controller;
 
 import java.util.List;
 
+import com.ecommerce.domain.dto.view.OrderDTOView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,9 +34,9 @@ public class OrderController {
     private OrderService orderService;
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Order>> listAll(@PathVariable Long userId) {
+    public ResponseEntity<List<OrderDTOView>> listAll(@PathVariable Long userId) {
        return ResponseEntity.ok(orderService.listAll(userId));
-//        return ResponseEntity.ok(orderRepository.findAll());
+       //todo: performar a consulta
     }
 
     @GetMapping("/{orderId}/user/{userId}")
@@ -46,7 +47,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<?> add(@RequestBody OrderDTOForm orderDTOForm) {
+    public ResponseEntity<?> createOrder(@RequestBody OrderDTOForm orderDTOForm) {
         try {
             orderService.createOrder(orderDTOForm);
 

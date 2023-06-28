@@ -61,18 +61,18 @@ public class Order {
     private User customer;
 
     @OneToMany(mappedBy = "order")
-    private List<ProductOrder> products;
+    private List<ProductOrder> productOrders;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status_order", nullable = false)
     private StatusOrder statusOrder;
 
-    public Order(BigDecimal subtotal, BigDecimal freightCharge, BigDecimal totalAmount, OrderDTOForm orderDTOForm) {
+    public Order(User user, BigDecimal subtotal, BigDecimal freightCharge, BigDecimal totalAmount, OrderDTOForm orderDTOForm) {
         this.subtotal = subtotal;
         this.freightCharge = freightCharge;
         this.totalAmount = totalAmount;
         this.creationDate = new Date();
         this.statusOrder = StatusOrder.CREATED;
-        this.customer = orderDTOForm.getCustomer();
+        this.customer = user;
     }
 }

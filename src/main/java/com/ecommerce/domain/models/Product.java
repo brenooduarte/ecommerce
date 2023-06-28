@@ -1,8 +1,10 @@
 package com.ecommerce.domain.models;
 
+import com.ecommerce.domain.dto.form.ProductDTOForm;
 import com.ecommerce.utils.GlobalConstants;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -10,6 +12,7 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "tb_product")
+@NoArgsConstructor
 public class Product {
 
     @Id
@@ -50,6 +53,17 @@ public class Product {
     
     @OneToMany(mappedBy = "product")
     private List<ProductOrder> orders;
+
+    public Product(ProductDTOForm productDTOForm){
+        this.id = productDTOForm.getId();
+        this.name = productDTOForm.getName();
+        this.price = productDTOForm.getPrice();
+        this.description = productDTOForm.getDescription();
+        this.image = productDTOForm.getImage();
+        this.highlight = productDTOForm.isHighlight();
+        this.promotion = productDTOForm.isPromotion();
+        this.promotionPrice = productDTOForm.getPricePromotion();
+    }
 
     public void addAssessment(Assessment assessment) {
         this.assessments.add(assessment);

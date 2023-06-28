@@ -28,7 +28,7 @@ public class Category {
     public Category(String image, String name) {
         this.image = image;
         this.name = name;
-        products = new ArrayList<>();
+        this.products = new ArrayList<>();
     }
 
     public Category() {

@@ -67,8 +67,7 @@ public class UserController {
     public ResponseEntity<?> add(@RequestBody UserDTOForm userDTO) throws UserAlreadyExistsException {
         try {
             User newUser = userService.createUser(userDTO);
-            UserDTOView userDTOView = new UserDTOView();
-            BeanUtils.copyProperties(newUser, userDTOView);
+            UserDTOView userDTOView = new UserDTOView(newUser);
 
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(userDTOView);
@@ -85,8 +84,7 @@ public class UserController {
 
         try {
             User updatedUser = userService.updateUser(userId, userDTOForm);
-            UserDTOView userDTOView = new UserDTOView();
-            BeanUtils.copyProperties(updatedUser, userDTOView);
+            UserDTOView userDTOView = new UserDTOView(updatedUser);
             return ResponseEntity.ok(userDTOView);
         } catch (NoSuchElementException e) {
             return ResponseEntity.notFound().build();

@@ -2,6 +2,7 @@ package com.ecommerce.domain.models;
 
 import java.util.List;
 
+import com.ecommerce.domain.dto.form.UserDTOForm;
 import com.ecommerce.domain.enums.UserType;
 
 import jakarta.persistence.CascadeType;
@@ -50,6 +51,13 @@ public class User {
     
     @Column(name = "address_type")
     private Long addressType;
+
+    public User(UserDTOForm userDTOForm) {
+        this.name = userDTOForm.getName();
+        this.email = userDTOForm.getEmail();
+        this.password = userDTOForm.getPassword();
+        this.userType = userDTOForm.getUserType();
+    }
 
     public void addAddress(UserAddress userAddress) {
         this.address.add(userAddress);

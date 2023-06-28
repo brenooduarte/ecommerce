@@ -8,6 +8,8 @@ import java.math.BigDecimal;
 @Data
 public class ProductDTOForm {
 
+    private Long id;
+
     private String name;
 
     private BigDecimal price;
@@ -21,7 +23,7 @@ public class ProductDTOForm {
     private boolean promotion;
 
     @JsonProperty("price_promotion")
-    private String pricePromotion;
+    private BigDecimal pricePromotion;
 
     @JsonProperty("category_id")
     private Long categoryId;

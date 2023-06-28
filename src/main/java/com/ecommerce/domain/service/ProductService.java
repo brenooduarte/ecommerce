@@ -49,8 +49,7 @@ public class ProductService {
 	}
 
 	public ProductDTOView createProduct(ProductDTOForm productDTOForm) throws ProductAlreadyExistsException {
-		Product product = new Product();
-		BeanUtils.copyProperties(productDTOForm, product, "category_id");
+		Product product = new Product(productDTOForm);
 
 		Category category = categoryRepository.findById(productDTOForm.getCategoryId())
 				.orElseThrow(() -> new NoSuchElementException("Category not found"));

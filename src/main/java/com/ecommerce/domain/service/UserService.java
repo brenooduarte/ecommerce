@@ -6,6 +6,7 @@ import com.ecommerce.domain.enums.UserType;
 import com.ecommerce.domain.exceptions.UserAlreadyExistsException;
 import com.ecommerce.domain.models.User;
 import com.ecommerce.domain.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,16 +27,13 @@ public class UserService {
 
 	public UserDTOView getById(long id) {
 	    Optional<User> userOptional = userRepository.findById(id);
-	    UserDTOView userDTOView = new UserDTOView();
 
 	    if (userOptional.isPresent()) {
 	        User user = userOptional.get();
-	        BeanUtils.copyProperties(user, userDTOView);
+			return new UserDTOView(user);
 	    } else {
 	        throw new NotFoundException("USER NOT FOUND");
 	    }
-
-	    return userDTOView;
 	}
 
 	public List<UserDTOView> listAllUsers() {
@@ -44,8 +42,7 @@ public class UserService {
 
 		for (User user : users) {
 			try {
-				UserDTOView userDTO = new UserDTOView();
-				BeanUtils.copyProperties(user, userDTO);
+				UserDTOView userDTO = new UserDTOView(user);
 				usersDTO.add(userDTO);
 			} catch (BeansException e) {
 				e.printStackTrace();
@@ -62,8 +59,7 @@ public class UserService {
 			throw new EntityNotFoundException("THIS USER IS NOT ADMIN OR DOES NOT EXIST");
 		}
 
-		UserDTOView adminDTO = new UserDTOView();
-		BeanUtils.copyProperties(admin, adminDTO);
+		UserDTOView adminDTO = new UserDTOView(admin);
 		adminDTOList.add(adminDTO);
 		return adminDTOList;
 	}
