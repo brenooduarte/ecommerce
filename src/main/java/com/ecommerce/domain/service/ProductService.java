@@ -2,6 +2,7 @@ package com.ecommerce.domain.service;
 
 import com.ecommerce.domain.dto.form.ProductDTOForm;
 import com.ecommerce.domain.dto.view.ProductDTOView;
+import com.ecommerce.domain.exceptions.EntityNotFoundException;
 import com.ecommerce.domain.exceptions.ProductAlreadyExistsException;
 import com.ecommerce.domain.models.Assessment;
 import com.ecommerce.domain.models.Category;
@@ -11,7 +12,6 @@ import com.ecommerce.domain.repository.AssessmentRepository;
 import com.ecommerce.domain.repository.CategoryRepository;
 import com.ecommerce.domain.repository.ProductRepository;
 import com.ecommerce.domain.repository.UserRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -37,8 +37,8 @@ public class ProductService {
 	@Autowired
 	private CategoryRepository categoryRepository;
 
-	public Product getById(long id) {
-		Optional<Product> userOptional = productRepository.findById(id);
+	public Product findProductById(long id) {
+		Optional<Product> userOptional = productRepository.findProductById(id);
 		return userOptional.orElse(null);
 	}
 
@@ -79,7 +79,7 @@ public class ProductService {
 	}
 
 	public Product updateProduct(Product newProduct) {
-		Product product = productRepository.findById(newProduct.getId())
+		Product product = productRepository.findProductById(newProduct.getId())
 				.orElseThrow(() -> new NoSuchElementException("Product not found"));
 		product.setName(newProduct.getName());
 		product.setPrice(newProduct.getPrice());
@@ -92,7 +92,7 @@ public class ProductService {
 	}
 
     public Assessment addAssessment(Assessment assessment, Long productId, Long userId) {
-		Product product = productRepository.findById(productId)
+		Product product = productRepository.findProductById(productId)
 				.orElseThrow(() -> new NoSuchElementException("Product not found"));
 
 		User user = userRepository.findById(userId)
@@ -106,14 +106,14 @@ public class ProductService {
     }
 
 	public void setActivePromotion(Long productId) {
-		Product product = productRepository.findById(productId)
+		Product product = productRepository.findProductById(productId)
 				.orElseThrow(() -> new NoSuchElementException("Product not found"));
 
 		product.setPromotion(!product.isPromotion());
 	}
 
 	public void setActiveProduct(Long productId) {
-		Product product = productRepository.findById(productId)
+		Product product = productRepository.findProductById(productId)
 				.orElseThrow(() -> new NoSuchElementException("Product not found"));
 
 		product.setPromotion(!product.isStatus());
@@ -123,9 +123,18 @@ public class ProductService {
 		Category category = categoryRepository.findById(categoryId)
 				.orElseThrow(() -> new NoSuchElementException("Category not found"));
 
-		Product product = productRepository.findById(productId)
+		Product product = productRepository.findProductById(productId)
 				.orElseThrow(() -> new NoSuchElementException("Product not found"));
 
 		category.addProduct(product);
 	}
+
+    public ProductDTOView findById(Long productId) {
+		Optional<Product> product = productRepository.findProductById(productId);
+		if (product.isPresent()) {
+			return new ProductDTOView(product.get());
+		}
+
+		throw new EntityNotFoundException("Product not exists");
+    }
 }

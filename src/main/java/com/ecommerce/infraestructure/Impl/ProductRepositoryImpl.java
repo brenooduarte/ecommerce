@@ -1,6 +1,7 @@
 package com.ecommerce.infraestructure.Impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
 
@@ -38,10 +39,28 @@ public class ProductRepositoryImpl implements ProductRepositoryQueries {
 				criteriaBuilder.equal(productRoot.get("status"), GlobalConstants.ACTIVE),
 				productRoot.in(products));
 		productRoot.fetch("assessments", JoinType.LEFT);
+		productRoot.fetch("category", JoinType.LEFT);
 
 		TypedQuery<Product> query = entityManager.createQuery(criteriaQuery);
 		return query.getResultList();
 
+	}
+
+	@Override
+	public Optional<Product> findProductById(Long productId) {
+		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Product> criteriaQuery = criteriaBuilder.createQuery(Product.class);
+
+		Root<Product> productRoot = criteriaQuery.from(Product.class);
+
+		criteriaQuery.select(productRoot);
+
+		criteriaQuery.where(criteriaBuilder.equal(productRoot.get("id"), productId));
+		productRoot.fetch("assessments", JoinType.LEFT);
+		productRoot.fetch("category", JoinType.LEFT);
+
+		TypedQuery<Product> query = entityManager.createQuery(criteriaQuery);
+		return Optional.ofNullable(query.getSingleResult());
 	}
 
 	@Override

@@ -49,16 +49,13 @@ public class ProductController {
     @Autowired
     private WishlistRepository wishlistRepository;
 
-    @GetMapping
-    public ResponseEntity<List<Product>> list() {
-        return new ResponseEntity<List<Product>>(productRepository.findAll(), HttpStatus.OK);
-    }
-
     @GetMapping("/{productId}")
-    public ResponseEntity<Product> findById(@PathVariable Long productId) {
-        Optional<Product> product = productRepository.findById(productId);
-        return product.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-
+    public ResponseEntity<ProductDTOView> findById(@PathVariable Long productId) {
+        try {
+            return ResponseEntity.ok(new ProductDTOView(productService.findProductById(productId)));
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
     
     @GetMapping("/active")
@@ -152,13 +149,13 @@ public class ProductController {
             @RequestBody Product product) {
 
         try {
-            Optional<Product> currentProduct = productRepository.findById(productId);
+            Optional<Product> currentProduct = productRepository.findProductById(productId);
 
             if (currentProduct.isPresent()) {
                 BeanUtils.copyProperties(product, currentProduct, "id");
 
                 productRepository.save(currentProduct.get());
-                return ResponseEntity.ok(currentProduct.get());
+                return ResponseEntity.ok(new ProductDTOView(currentProduct.get()));
             }
 
             return ResponseEntity.notFound().build();
