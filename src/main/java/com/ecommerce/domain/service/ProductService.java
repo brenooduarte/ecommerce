@@ -78,6 +78,10 @@ public class ProductService {
 		return productDTOViews;
 	}
 
+	public Page<Assessment> findAllByProductId(Long productId, PageRequest pageRequest) {
+		return productRepository.findAllByProductId(productId, pageRequest);
+	}
+
 	public Product updateProduct(Product newProduct) {
 		Product product = productRepository.findProductById(newProduct.getId())
 				.orElseThrow(() -> new NoSuchElementException("Product not found"));
@@ -129,12 +133,4 @@ public class ProductService {
 		category.addProduct(product);
 	}
 
-    public ProductDTOView findById(Long productId) {
-		Optional<Product> product = productRepository.findProductById(productId);
-		if (product.isPresent()) {
-			return new ProductDTOView(product.get());
-		}
-
-		throw new EntityNotFoundException("Product not exists");
-    }
 }

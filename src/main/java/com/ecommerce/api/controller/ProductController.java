@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import jakarta.persistence.NoResultException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -53,7 +54,7 @@ public class ProductController {
     public ResponseEntity<ProductDTOView> findById(@PathVariable Long productId) {
         try {
             return ResponseEntity.ok(new ProductDTOView(productService.findProductById(productId)));
-        } catch (EntityNotFoundException e) {
+        } catch (NoResultException e) {
             return ResponseEntity.notFound().build();
         }
     }
@@ -90,6 +91,16 @@ public class ProductController {
         return ResponseEntity.ok(productDTOViews);
     }
 
+    @GetMapping("{productId}/assessments")
+    public Page<Assessment> findAllByProductId(
+            @PathVariable Long productId,
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "size", defaultValue = "20") Integer size
+    ) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return productService.findAllByProductId(productId, pageRequest);
+    }
+
     @PostMapping
     public ResponseEntity<?> createProduct(@RequestBody ProductDTOForm productDTOForm) {
         try {
@@ -102,7 +113,7 @@ public class ProductController {
         }
     }
 
-    @PostMapping("{productId}/comments/user/{userId}")
+    @PostMapping("{productId}/assessments/user/{userId}")
     public ResponseEntity<?> addAssessment(
             @RequestBody Assessment assessment,
             @PathVariable Long productId,
