@@ -4,9 +4,11 @@ import java.util.List;
 import java.util.Optional;
 
 import jakarta.persistence.criteria.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.ecommerce.domain.models.Assessment;
@@ -21,12 +23,14 @@ import jakarta.persistence.TypedQuery;
 @Repository
 public class ProductRepositoryImpl implements ProductRepositoryQueries {
 
-
 	@PersistenceContext
-	EntityManager entityManager;
-	
+	private EntityManager entityManager;
+
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
+
 	@Override
-	public List<Product> listAllActive(List<Product> products) {
+	public Page<Product> listAllActive(PageRequest pageRequest) {
 
 		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Product> criteriaQuery = criteriaBuilder.createQuery(Product.class);
@@ -36,13 +40,19 @@ public class ProductRepositoryImpl implements ProductRepositoryQueries {
 		criteriaQuery.select(productRoot);
 
 		criteriaQuery.where(
-				criteriaBuilder.equal(productRoot.get("status"), GlobalConstants.ACTIVE),
-				productRoot.in(products));
+				criteriaBuilder.equal(productRoot.get("status"), GlobalConstants.ACTIVE));
 		productRoot.fetch("assessments", JoinType.LEFT);
 		productRoot.fetch("category", JoinType.LEFT);
 
-		TypedQuery<Product> query = entityManager.createQuery(criteriaQuery);
-		return query.getResultList();
+		int offset = pageRequest.getPageNumber() * pageRequest.getPageSize();
+		int limit = pageRequest.getPageSize();
+
+		List<Product> query = entityManager.createQuery(criteriaQuery)
+				.setFirstResult(offset)
+				.setMaxResults(limit)
+				.getResultList();
+
+		return new PageImpl<>(query);
 
 	}
 
@@ -86,21 +96,9 @@ public class ProductRepositoryImpl implements ProductRepositoryQueries {
 	}
 
 	@Override
-	public Assessment addAssessment(Assessment assessment, Long productId, Long userId) {
-
-//		Product product = productRepository.findById(productId)
-//				.orElseThrow(() -> new NoSuchElementException("Product not found"));
-//
-//		User user = userRepository.findById(userId)
-//				.orElseThrow(() -> new NoSuchElementException("User not found"));
-//
-//		user.addAssessment(assessment);
-//		product.addAssessment(assessment);
-//		assessmentRepository.save(assessment);
-
-
-
-		return null;
+	public void createAssessment(Assessment assessment, Long userId, Long productId) {
+		String sql = "INSERT INTO tb_assessment (comment, score, user_id, product_id) VALUES (?, ?, ?, ?)";
+		jdbcTemplate.update(sql, assessment.getComment(), assessment.getScore(), userId, productId);
 	}
 
 }

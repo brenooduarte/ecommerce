@@ -89,6 +89,7 @@ public class ProductController {
                 .map(ProductDTOView::new)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(productDTOViews);
+        //todo: melhorar performace
     }
 
     @GetMapping("{productId}/assessments")
@@ -117,7 +118,8 @@ public class ProductController {
     public ResponseEntity<?> addAssessment(
             @RequestBody Assessment assessment,
             @PathVariable Long productId,
-            @PathVariable Long userId) {
+            @PathVariable Long userId
+    ) {
 
         try {
             return ResponseEntity.status(HttpStatus.CREATED)
@@ -155,7 +157,7 @@ public class ProductController {
     }
 
     @PutMapping("/{productId}")
-    public ResponseEntity<?> update(
+    public ResponseEntity<?> updateProduct(
             @PathVariable Long productId,
             @RequestBody Product product) {
 

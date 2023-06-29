@@ -43,8 +43,7 @@ public class ProductService {
 	}
 
 	public Page<ProductDTOView> listAllActive(PageRequest pageRequest) {
-		Page<Product> page = productRepository.findAll(pageRequest);
-		productRepository.listAllActive(page.stream().toList());
+		Page<Product> page = productRepository.listAllActive(pageRequest);
 		return page.map(ProductDTOView::new);
 	}
 
@@ -96,15 +95,10 @@ public class ProductService {
 	}
 
     public Assessment addAssessment(Assessment assessment, Long productId, Long userId) {
-		Product product = productRepository.findProductById(productId)
-				.orElseThrow(() -> new NoSuchElementException("Product not found"));
+		productRepository.findProductById(productId)
+				.orElseThrow(() -> new EntityNotFoundException("Product not found"));
 
-		User user = userRepository.findById(userId)
-				.orElseThrow(() -> new NoSuchElementException("User not found"));
-
-		user.addAssessment(assessment);
-		product.addAssessment(assessment);
-		assessmentRepository.save(assessment);
+		productRepository.createAssessment(assessment, productId, userId);
 
 		return assessment;
     }
