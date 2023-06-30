@@ -2,6 +2,7 @@ package com.ecommerce.domain.service;
 
 import com.ecommerce.domain.dto.form.OrderDTOForm;
 import com.ecommerce.domain.dto.form.ProductDTOForm;
+import com.ecommerce.domain.dto.form.ProductDTOFormWithId;
 import com.ecommerce.domain.dto.view.OrderDTOView;
 import com.ecommerce.domain.enums.StatusOrder;
 import com.ecommerce.domain.models.*;
@@ -43,7 +44,7 @@ public class OrderService {
 		// TODO: Calculate freight charge
 		BigDecimal freightCharge = BigDecimal.valueOf(100);
 
-		for (ProductDTOForm product : orderDTOForm.getProducts()) {
+		for (ProductDTOFormWithId product : orderDTOForm.getProducts()) {
 			subtotal = subtotal.add(product.getPrice());
 		}
 
@@ -56,11 +57,9 @@ public class OrderService {
 				.orElseThrow(() -> new EntityNotFoundException("Address not exists"));
 
 		order.setDeliveryAddress(deliveryAddress);
-		orderRepository.save(order);
+		Order savedOrder = orderRepository.save(order);
 
-		for (ProductDTOForm productDTOForm : orderDTOForm.getProducts()) {
-			productOrderRepository.save(new ProductOrder(order, new Product(productDTOForm)));
-		}
+		productOrderRepository.insertInProductOrder(savedOrder.getId(), orderDTOForm.getProducts());
 
 	}
 

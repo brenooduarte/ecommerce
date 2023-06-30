@@ -13,7 +13,7 @@ public class OrderDTOForm {
 
     @NotEmpty
     @Size(min = 1)
-    private List<ProductDTOForm> products;
+    private List<ProductDTOFormWithId> products;
 
     @NotBlank
     @JsonProperty("customer_id")

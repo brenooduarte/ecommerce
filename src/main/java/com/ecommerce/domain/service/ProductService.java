@@ -7,11 +7,7 @@ import com.ecommerce.domain.exceptions.ProductAlreadyExistsException;
 import com.ecommerce.domain.models.Assessment;
 import com.ecommerce.domain.models.Category;
 import com.ecommerce.domain.models.Product;
-import com.ecommerce.domain.models.User;
-import com.ecommerce.domain.repository.AssessmentRepository;
-import com.ecommerce.domain.repository.CategoryRepository;
-import com.ecommerce.domain.repository.ProductRepository;
-import com.ecommerce.domain.repository.UserRepository;
+import com.ecommerce.domain.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +23,9 @@ public class ProductService {
 
 	@Autowired
 	private ProductRepository productRepository;
+
+	@Autowired
+	private ProductOrderRepository productOrderRepository;
 
 	@Autowired
 	private AssessmentRepository assessmentRepository;
@@ -90,8 +89,9 @@ public class ProductService {
 		return productRepository.save(product);
 	}
 
-	public void deleteProductById(long id) {
-		productRepository.deleteById(id);
+	public void deleteProductById(Long productId) {
+		productOrderRepository.deleteByProductId(productId);
+		productRepository.deleteById(productId);
 	}
 
     public Assessment addAssessment(Assessment assessment, Long productId, Long userId) {

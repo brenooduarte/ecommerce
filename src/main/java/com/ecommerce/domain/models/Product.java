@@ -1,6 +1,7 @@
 package com.ecommerce.domain.models;
 
 import com.ecommerce.domain.dto.form.ProductDTOForm;
+import com.ecommerce.domain.dto.form.ProductDTOFormWithId;
 import com.ecommerce.utils.GlobalConstants;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -62,6 +63,17 @@ public class Product {
         this.highlight = productDTOForm.isHighlight();
         this.promotion = productDTOForm.isPromotion();
         this.promotionPrice = productDTOForm.getPricePromotion();
+    }
+
+    public Product(ProductDTOFormWithId productDTOFormWithId) {
+        this.id = productDTOFormWithId.getId();
+        this.name = productDTOFormWithId.getName();
+        this.price = productDTOFormWithId.getPrice();
+        this.description = productDTOFormWithId.getDescription();
+        this.image = productDTOFormWithId.getImage();
+        this.highlight = productDTOFormWithId.isHighlight();
+        this.promotion = productDTOFormWithId.isPromotion();
+        this.promotionPrice = productDTOFormWithId.getPricePromotion();
     }
 
     public void addAssessment(Assessment assessment) {

@@ -57,6 +57,8 @@ public class OrderController {
             return ResponseEntity.badRequest()
                     .body(e.getMessage());
         }
+        //todo: problema ao criar
+        //todo: melhorar performace
     }
 
     @PatchMapping("/{orderId}")

@@ -112,6 +112,7 @@ public class ProductController {
             return ResponseEntity.badRequest()
                     .body(e.getMessage());
         }
+        //todo: melhorar performace
     }
 
     @PostMapping("{productId}/assessments/user/{userId}")
@@ -157,31 +158,30 @@ public class ProductController {
     }
 
     @PutMapping("/{productId}")
-    public ResponseEntity<?> updateProduct(
+    public ResponseEntity<ProductDTOView> updateProduct(
             @PathVariable Long productId,
-            @RequestBody Product product) {
+            @RequestBody ProductDTOForm productDTOForm) {
 
         try {
-            Optional<Product> currentProduct = productRepository.findProductById(productId);
+            Optional<Product> product = productRepository.findProductById(productId);
 
-            if (currentProduct.isPresent()) {
-                BeanUtils.copyProperties(product, currentProduct, "id");
-
-                productRepository.save(currentProduct.get());
-                return ResponseEntity.ok(new ProductDTOView(currentProduct.get()));
+            if (product.isPresent()) {
+                BeanUtils.copyProperties(productDTOForm, product.get(), "id");
+                return ResponseEntity.ok(new ProductDTOView(productRepository.save(product.get())));
             }
 
             return ResponseEntity.notFound().build();
 
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.badRequest()
-                    .body(e.getMessage());
+            return ResponseEntity.notFound().build();
         }
     }
 
     @DeleteMapping("/{productId}")
     public ResponseEntity<?> deleteProductById(@PathVariable Long productId) {
         try {
+            //todo: fazer a regra de desativar o produto se o produto estivr na tabela de ProductOrder
+            // e apagar quando nao estiver nessa tabela
             productService.deleteProductById(productId);
             return ResponseEntity.noContent().build();
 
