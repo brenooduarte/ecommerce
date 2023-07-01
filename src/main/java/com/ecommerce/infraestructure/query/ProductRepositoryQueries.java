@@ -12,4 +12,5 @@ public interface ProductRepositoryQueries{
 	 Optional<Product> findProductById(Long productId);
 	 Page<Assessment> findAllByProductId(Long productId, PageRequest pageRequest);
 	 void createAssessment(Assessment assessment, Long productId, Long userId);
+	 Page<Product> viewProductByCategory(Long categoryId, PageRequest pageRequest);
 }

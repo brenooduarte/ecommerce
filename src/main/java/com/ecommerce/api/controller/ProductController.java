@@ -1,40 +1,26 @@
 package com.ecommerce.api.controller;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import jakarta.persistence.NoResultException;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.ecommerce.domain.dto.form.ProductDTOForm;
+import com.ecommerce.domain.dto.form.ProductDTOFormWithId;
 import com.ecommerce.domain.dto.view.ProductDTOView;
-import com.ecommerce.domain.exceptions.EntityInUseException;
 import com.ecommerce.domain.exceptions.ProductAlreadyExistsException;
 import com.ecommerce.domain.models.Assessment;
 import com.ecommerce.domain.models.Product;
 import com.ecommerce.domain.repository.ProductRepository;
 import com.ecommerce.domain.repository.WishlistRepository;
 import com.ecommerce.domain.service.ProductService;
-
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.NoResultException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/products")
@@ -82,21 +68,23 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/category/{categoryId}")
-    public ResponseEntity<List<ProductDTOView>> viewProductByCategory(@PathVariable Long categoryId) {
-        List<Product> products = productRepository.findByCategoryId(categoryId);
-        List<ProductDTOView> productDTOViews = products.stream()
-                .map(ProductDTOView::new)
-                .collect(Collectors.toList());
+    @GetMapping("/categories/{categoryId}")
+    public ResponseEntity<Page<ProductDTOView>> viewProductByCategory(
+            @PathVariable Long categoryId,
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "size", defaultValue = "10") Integer size
+    ) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<ProductDTOView> productDTOViews = productService.viewProductByCategory(categoryId, pageRequest);
+
         return ResponseEntity.ok(productDTOViews);
-        //todo: melhorar performace
     }
 
     @GetMapping("{productId}/assessments")
     public Page<Assessment> findAllByProductId(
             @PathVariable Long productId,
             @RequestParam(value = "page", defaultValue = "0") Integer page,
-            @RequestParam(value = "size", defaultValue = "20") Integer size
+            @RequestParam(value = "size", defaultValue = "10") Integer size
     ) {
         PageRequest pageRequest = PageRequest.of(page, size);
         return productService.findAllByProductId(productId, pageRequest);
@@ -142,55 +130,40 @@ public class ProductController {
             return ResponseEntity.ok().build();
 
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.badRequest()
-                    .body(e.getMessage());
+            return ResponseEntity.notFound().build();
         }
     }
 
     @PatchMapping("/{productId}/active-promotion")
-    public void setActivePromotion(@PathVariable Long productId) {
-        productService.setActivePromotion(productId);
-    }
-
-    @PatchMapping("/{productId}/active-product")
-    public void setActiveProduct(@PathVariable Long productId) {
-        productService.setActiveProduct(productId);
-    }
-
-    @PutMapping("/{productId}")
-    public ResponseEntity<ProductDTOView> updateProduct(
-            @PathVariable Long productId,
-            @RequestBody ProductDTOForm productDTOForm) {
-
+    public ResponseEntity<Boolean> setActivePromotion(@PathVariable Long productId) {
         try {
-            Optional<Product> product = productRepository.findProductById(productId);
-
-            if (product.isPresent()) {
-                BeanUtils.copyProperties(productDTOForm, product.get(), "id");
-                return ResponseEntity.ok(new ProductDTOView(productRepository.save(product.get())));
-            }
-
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.ok(productService.setActivePromotion(productId));
 
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
+
     }
 
-    @DeleteMapping("/{productId}")
-    public ResponseEntity<?> deleteProductById(@PathVariable Long productId) {
+    @PatchMapping("/{productId}/active-product")
+    public ResponseEntity<Boolean> setActiveProduct(@PathVariable Long productId) {
         try {
-            //todo: fazer a regra de desativar o produto se o produto estivr na tabela de ProductOrder
-            // e apagar quando nao estiver nessa tabela
-            productService.deleteProductById(productId);
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok(productService.setActiveProduct(productId));
 
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
+        }
 
-        } catch (EntityInUseException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(e.getMessage());
+    }
+
+    @PutMapping("/edit")
+    public ResponseEntity<ProductDTOView> updateProduct(
+            @RequestBody ProductDTOFormWithId productDTOFormWithId
+    ) {
+        try {
+            return ResponseEntity.ok(productService.updateProduct(productDTOFormWithId));
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
         }
     }
 
