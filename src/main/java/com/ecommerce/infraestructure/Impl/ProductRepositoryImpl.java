@@ -1,10 +1,12 @@
 package com.ecommerce.infraestructure.Impl;
 
+import com.ecommerce.domain.exceptions.EntityNotFoundException;
 import com.ecommerce.domain.models.Assessment;
 import com.ecommerce.domain.models.Product;
 import com.ecommerce.infraestructure.query.ProductRepositoryQueries;
 import com.ecommerce.utils.GlobalConstants;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -75,6 +77,27 @@ public class ProductRepositoryImpl implements ProductRepositoryQueries {
 	}
 
 	@Override
+	public Product findByName(String name) {
+		try {
+			CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+			CriteriaQuery<Product> criteriaQuery = criteriaBuilder.createQuery(Product.class);
+
+			Root<Product> productRoot = criteriaQuery.from(Product.class);
+
+			criteriaQuery.select(productRoot);
+
+			criteriaQuery.where(criteriaBuilder.equal(productRoot.get("name"), name));
+			productRoot.fetch("assessments", JoinType.LEFT);
+			productRoot.fetch("category", JoinType.LEFT);
+
+			return entityManager.createQuery(criteriaQuery).getSingleResult();
+
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+
+	@Override
 	public Page<Assessment> findAllByProductId(Long productId, PageRequest pageRequest) {
 		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Assessment> criteriaQuery = criteriaBuilder.createQuery(Assessment.class);
@@ -100,6 +123,14 @@ public class ProductRepositoryImpl implements ProductRepositoryQueries {
 	public void createAssessment(Assessment assessment, Long userId, Long productId) {
 		String sql = "INSERT INTO tb_assessment (comment, score, user_id, product_id) VALUES (?, ?, ?, ?)";
 		jdbcTemplate.update(sql, assessment.getComment(), assessment.getScore(), userId, productId);
+	}
+
+	@Override
+	public void createProduct(Product product, Long categoryId) {
+		String sql = "INSERT INTO tb_product (name, price, description, image, highlight, promotion, promotion_price, status, category_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		jdbcTemplate
+				.update(sql, product.getName(), product.getPrice(), product.getDescription(), product.getImage(), product.isHighlight(),
+						product.isPromotion(), product.getPromotionPrice(), GlobalConstants.ACTIVE, categoryId);
 	}
 
 	@Override

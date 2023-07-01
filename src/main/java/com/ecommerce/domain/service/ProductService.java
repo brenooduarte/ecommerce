@@ -58,9 +58,8 @@ public class ProductService {
 		Category category = categoryRepository.findById(productDTOForm.getCategoryId())
 				.orElseThrow(() -> new EntityNotFoundException("Category not found"));
 
-		product = productRepository.save(product);
-		category.addProduct(product);
-		categoryRepository.save(category);
+		productRepository.createProduct(product, category.getId());
+		product = productRepository.findByName(product.getName());
 
 		return new ProductDTOView(product);
 	}
