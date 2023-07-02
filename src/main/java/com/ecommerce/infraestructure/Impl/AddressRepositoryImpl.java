@@ -41,7 +41,8 @@ public class AddressRepositoryImpl implements AddressRepositoryQueries {
         criteriaQuery.select(addressRoot);
 
         criteriaQuery.where(criteriaBuilder.equal(addressRoot.get("user").get("id"), userId));
-                addressRoot.fetch("city", JoinType.LEFT);
+                addressRoot.fetch("city", JoinType.LEFT)
+                        .fetch("state", JoinType.LEFT);
                 addressRoot.fetch("user", JoinType.LEFT);
 
         TypedQuery<Address> query = entityManager.createQuery(criteriaQuery);
@@ -81,7 +82,8 @@ public class AddressRepositoryImpl implements AddressRepositoryQueries {
                 criteriaBuilder.equal(addressRoot.get("user").get("id"), userId),
                 criteriaBuilder.equal(addressRoot.get("id"), addressId));
         addressRoot.fetch("user", JoinType.LEFT);
-        addressRoot.fetch("city", JoinType.LEFT);
+        addressRoot.fetch("city", JoinType.LEFT)
+                .fetch("state", JoinType.LEFT);
 
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

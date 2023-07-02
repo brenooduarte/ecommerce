@@ -13,7 +13,6 @@ import com.ecommerce.domain.repository.ProductOrderRepository;
 import com.ecommerce.domain.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -77,7 +76,7 @@ public class OrderService {
 		}
 	}
 
-	public ResponseEntity<Order> setStatusOrder(Long orderId, String status) {
+	public Order setStatusOrder(Long orderId, String status) throws Exception {
 
 		status = status.toUpperCase();
 
@@ -85,30 +84,28 @@ public class OrderService {
 		Order order;
 
 		if (orderOptional.isEmpty()) {
-			return ResponseEntity.notFound().build();
+			throw new EntityNotFoundException("Order not exists");
 		} else {
 			order = orderOptional.get();
 		}
 
 		switch (status) {
-			case "CONFIRMED":
+			case "CONFIRMED" -> {
 				order.setStatusOrder(StatusOrder.valueOf("CONFIRMED"));
 				order.setConfirmationDate(new Date());
-				break;
-			case "DELIVERED":
+			}
+			case "DELIVERED" -> {
 				order.setStatusOrder(StatusOrder.valueOf("DELIVERED"));
 				order.setDeliveryDate(new Date());
-				break;
-			case "CANCELED":
+			}
+			case "CANCELED" -> {
 				order.setStatusOrder(StatusOrder.valueOf("CANCELED"));
 				order.setCancellationDate(new Date());
-				break;
-			default:
-				return ResponseEntity.badRequest().build();
+			}
+			default -> throw new Exception("Status not exists");
 		}
 
-		orderRepository.save(order);
-		return ResponseEntity.ok(order);
+		return orderRepository.save(order);
 	}
 
 	public List<OrderDTOView> listAll(Long userId) {

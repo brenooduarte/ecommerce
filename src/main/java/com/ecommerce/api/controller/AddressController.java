@@ -1,29 +1,19 @@
 package com.ecommerce.api.controller;
 
-import java.util.List;
-
+import com.ecommerce.domain.dto.form.AddressDTOForm;
 import com.ecommerce.domain.dto.view.AddressDTOView;
+import com.ecommerce.domain.models.Address;
+import com.ecommerce.domain.repository.AddressRepository;
+import com.ecommerce.domain.service.AddressService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.ecommerce.domain.dto.form.AddressDTOForm;
-import com.ecommerce.domain.models.Address;
-import com.ecommerce.domain.repository.AddressRepository;
-import com.ecommerce.domain.service.AddressService;
-
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.persistence.EntityNotFoundException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/addresses")
@@ -56,9 +46,8 @@ public class AddressController {
             @PathVariable Long userId) {
 
         try {
-            AddressDTOView addressDTOView = new AddressDTOView(addressService.findByAddressIdAndUserId(addressId, userId));
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(addressDTOView);
+            Address address = addressService.findByAddressIdAndUserId(addressId, userId);
+            return ResponseEntity.ok(new AddressDTOView(address));
 
         } catch (EmptyResultDataAccessException e) {
             return ResponseEntity.noContent()
