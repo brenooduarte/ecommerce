@@ -1,21 +1,12 @@
 package com.ecommerce.domain.models;
 
-import java.util.List;
-
 import com.ecommerce.domain.dto.form.UserDTOForm;
 import com.ecommerce.domain.enums.UserType;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -42,9 +33,6 @@ public class User {
     @OneToMany
     @JoinColumn(name = "user_id")
     private List<Assessment> assessments;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<UserAddress> address;
     
     @OneToMany(mappedBy = "customer")
     private List<Order> orders;
@@ -57,10 +45,6 @@ public class User {
         this.email = userDTOForm.getEmail();
         this.password = userDTOForm.getPassword();
         this.userType = userDTOForm.getUserType();
-    }
-
-    public void addAddress(UserAddress userAddress) {
-        this.address.add(userAddress);
     }
 
     public void addAssessment(Assessment assessment) {

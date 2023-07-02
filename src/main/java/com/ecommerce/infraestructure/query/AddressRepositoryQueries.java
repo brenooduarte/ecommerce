@@ -12,4 +12,6 @@ public interface AddressRepositoryQueries {
 
     Address findByAddressIdAndUserId(Long addressId, Long userId);
 
+    Address createAddress(Address address, Long userId);
+
 }

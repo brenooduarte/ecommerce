@@ -2,6 +2,7 @@ package com.ecommerce.api.controller;
 
 import java.util.List;
 
+import com.ecommerce.domain.dto.view.AddressDTOView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -36,9 +37,11 @@ public class AddressController {
     private AddressService addressService;
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Address>> findAll(@PathVariable Long userId) {
+    public ResponseEntity<List<AddressDTOView>> findAll(@PathVariable Long userId) {
         try {
-            return new ResponseEntity<>(addressRepository.findAll(userId), HttpStatus.OK);
+            List<Address> addresses = addressRepository.findAll(userId);
+            List<AddressDTOView> addressDTOViews = addresses.stream().map(AddressDTOView::new).toList();
+            return new ResponseEntity<>(addressDTOViews, HttpStatus.OK);
 
         } catch (EmptyResultDataAccessException e) {
             return ResponseEntity.noContent()
@@ -48,13 +51,14 @@ public class AddressController {
     }
 
     @GetMapping("{addressId}/user/{userId}")
-    public ResponseEntity<Address> findByAddressIdAndUserId(
+    public ResponseEntity<AddressDTOView> findByAddressIdAndUserId(
             @PathVariable Long addressId,
             @PathVariable Long userId) {
 
         try {
+            AddressDTOView addressDTOView = new AddressDTOView(addressService.findByAddressIdAndUserId(addressId, userId));
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(addressService.findByAddressIdAndUserId(addressId, userId));
+                    .body(addressDTOView);
 
         } catch (EmptyResultDataAccessException e) {
             return ResponseEntity.noContent()
@@ -64,18 +68,17 @@ public class AddressController {
     }
 
     @PostMapping("/user/{userId}")
-    public ResponseEntity<?> createAddress(
+    public ResponseEntity<AddressDTOView> createAddress(
             @RequestBody AddressDTOForm addressDTOForm,
-            @PathVariable Long userId) {
-
+            @PathVariable Long userId
+    ) {
         try {
-            addressService.createAddress(addressDTOForm, userId);
-
+            Address address = addressService.createAddress(addressDTOForm, userId);
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .build();
+                    .body(new AddressDTOView(address));
+
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.badRequest()
-                    .body(e.getMessage());
+            return ResponseEntity.badRequest().build();
         }
     }
 

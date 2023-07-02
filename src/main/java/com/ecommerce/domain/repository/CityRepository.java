@@ -8,6 +8,5 @@ import com.ecommerce.domain.models.State;
 public interface CityRepository extends JpaRepository<City, Long> {
 
     City findByNameAndState(String name, State state);
-//    List<City> findAll(Long cityId);
 
 }

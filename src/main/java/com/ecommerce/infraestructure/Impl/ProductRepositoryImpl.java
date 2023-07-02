@@ -1,6 +1,5 @@
 package com.ecommerce.infraestructure.Impl;
 
-import com.ecommerce.domain.exceptions.EntityNotFoundException;
 import com.ecommerce.domain.models.Assessment;
 import com.ecommerce.domain.models.Product;
 import com.ecommerce.infraestructure.query.ProductRepositoryQueries;
