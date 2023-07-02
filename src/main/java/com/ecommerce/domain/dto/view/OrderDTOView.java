@@ -1,15 +1,13 @@
 package com.ecommerce.domain.dto.view;
 
 import com.ecommerce.domain.enums.StatusOrder;
-import com.ecommerce.domain.models.Address;
 import com.ecommerce.domain.models.Order;
 import com.ecommerce.domain.models.Product;
-import com.ecommerce.domain.models.ProductOrder;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Data
@@ -29,9 +27,9 @@ public class OrderDTOView {
 
     private Date deliveryDate;
 
-    private Address deliveryAddress;
+    private AddressDTOView deliveryAddress;
 
-    private List<ProductDTOView> products;
+    private Set<ProductDTOView> productDTOViews;
 
     private StatusOrder statusOrder;
 
@@ -43,20 +41,16 @@ public class OrderDTOView {
         this.confirmationDate = order.getConfirmationDate();
         this.cancellationDate = order.getCancellationDate();
         this.deliveryDate = order.getDeliveryDate();
-        this.deliveryAddress = order.getDeliveryAddress();
-        this.products = parseToProductDTOView(order.getProductOrders());
+        this.deliveryAddress = new AddressDTOView(order.getDeliveryAddress());
+        if (order.getProducts() != null) {
+            this.productDTOViews = parseToProductDTOView(order.getProducts());
+        }
         this.statusOrder = order.getStatusOrder();
     }
 
-    private List<Product> extractProducts(List<ProductOrder> productOrders) {
-        return productOrders.stream().map(ProductOrder::getProduct).toList();
-    }
-
-    private List<ProductDTOView> parseToProductDTOView(List<ProductOrder> productOrders) {
-        List<Product> products = extractProducts(productOrders);
+    private Set<ProductDTOView> parseToProductDTOView(Set<Product> products) {
         return products.stream()
                 .map(ProductDTOView::new)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
-
 }

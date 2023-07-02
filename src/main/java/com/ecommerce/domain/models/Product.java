@@ -51,9 +51,6 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
-    
-    @OneToMany(mappedBy = "product")
-    private List<ProductOrder> orders;
 
     public Product(ProductDTOForm productDTOForm){
         this.name = productDTOForm.getName();

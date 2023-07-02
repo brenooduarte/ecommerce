@@ -6,14 +6,14 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-import java.util.List;
+import java.util.Set;
 
 @Data
 public class OrderDTOForm {
 
     @NotEmpty
     @Size(min = 1)
-    private List<ProductDTOFormWithId> products;
+    private Set<ProductDTOFormWithId> products;
 
     @NotBlank
     @JsonProperty("customer_id")

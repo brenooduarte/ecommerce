@@ -7,5 +7,6 @@ import java.util.List;
 public interface OrderRepositoryQueries {
 
     List<Order> listAll(Long userId);
+    Order findOrderById(Long orderId);
 
 }

@@ -1,26 +1,17 @@
 package com.ecommerce.api.controller;
 
-import java.util.List;
-
-import com.ecommerce.domain.dto.view.OrderDTOView;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.ecommerce.domain.dto.form.OrderDTOForm;
+import com.ecommerce.domain.dto.view.OrderDTOView;
 import com.ecommerce.domain.models.Order;
 import com.ecommerce.domain.repository.OrderRepository;
 import com.ecommerce.domain.service.OrderService;
-
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/orders")
@@ -40,24 +31,20 @@ public class OrderController {
     }
 
     @GetMapping("/{orderId}/user/{userId}")
-    public ResponseEntity<OrderDTOView> findById(
-            @PathVariable Long orderId,
-            @PathVariable Long userId) {
-        return orderService.findById(orderId, userId);
+    public ResponseEntity<OrderDTOView> findById(@PathVariable Long orderId) {
+        Order order = orderService.findById(orderId);
+        return ResponseEntity.ok(new OrderDTOView(order));
     }
 
     @PostMapping
-    public ResponseEntity<?> createOrder(@RequestBody OrderDTOForm orderDTOForm) {
+    public ResponseEntity<OrderDTOView> createOrder(@RequestBody OrderDTOForm orderDTOForm) {
         try {
-            orderService.createOrder(orderDTOForm);
+            Order order = orderService.createOrder(orderDTOForm);
+            return ResponseEntity.ok(new OrderDTOView(order));
 
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .build();
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.badRequest()
-                    .body(e.getMessage());
+            return ResponseEntity.badRequest().build();
         }
-        //todo: problema ao criar
         //todo: melhorar performace
     }
 

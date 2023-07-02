@@ -91,14 +91,14 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createProduct(@RequestBody ProductDTOForm productDTOForm) {
+    public ResponseEntity<ProductDTOView> createProduct(@RequestBody ProductDTOForm productDTOForm) {
         try {
             ProductDTOView createdProduct = productService.createProduct(productDTOForm);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(createdProduct);
+
         } catch (ProductAlreadyExistsException e) {
-            return ResponseEntity.badRequest()
-                    .body(e.getMessage());
+            return ResponseEntity.badRequest().build();
         }
         //todo: melhorar performace
     }

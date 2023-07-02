@@ -2,6 +2,7 @@ package com.ecommerce.domain.models;
 
 import com.ecommerce.domain.dto.form.UserDTOForm;
 import com.ecommerce.domain.enums.UserType;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -35,6 +36,7 @@ public class User {
     private List<Assessment> assessments;
     
     @OneToMany(mappedBy = "customer")
+    @JsonBackReference
     private List<Order> orders;
     
     @Column(name = "address_type")

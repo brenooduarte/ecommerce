@@ -2,26 +2,22 @@ package com.ecommerce.infraestructure.Impl;
 
 import com.ecommerce.domain.dto.form.ProductDTOFormWithId;
 import com.ecommerce.infraestructure.query.ProductOrderRepositoryQueries;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public class ProductOrderRepositoryImpl implements ProductOrderRepositoryQueries {
-
-    @PersistenceContext
-    private EntityManager entityManager;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     @Override
-    public void insertInProductOrder(Long orderId, List<ProductDTOFormWithId> products) {
+    public void insertInProductOrder(Long orderId, Set<ProductDTOFormWithId> products) {
 
         int size = products.size();
 
@@ -32,7 +28,7 @@ public class ProductOrderRepositoryImpl implements ProductOrderRepositoryQueries
             sqlBuilder.append("INSERT INTO tb_product_order (price_on_purchase, promotion_price, order_id, product_id) VALUES ");
 
             for (int i = 0; i < size; i++) {
-                ProductDTOFormWithId productDTOForm = products.get(i);
+                ProductDTOFormWithId productDTOForm = products.stream().toList().get(i);
                 sqlBuilder.append("(?, ?, ?, ?)");
 
                 args.add(productDTOForm.getPrice());

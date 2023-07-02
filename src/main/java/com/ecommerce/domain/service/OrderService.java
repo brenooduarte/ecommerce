@@ -1,18 +1,18 @@
 package com.ecommerce.domain.service;
 
 import com.ecommerce.domain.dto.form.OrderDTOForm;
-import com.ecommerce.domain.dto.form.ProductDTOForm;
 import com.ecommerce.domain.dto.form.ProductDTOFormWithId;
 import com.ecommerce.domain.dto.view.OrderDTOView;
 import com.ecommerce.domain.enums.StatusOrder;
-import com.ecommerce.domain.models.*;
+import com.ecommerce.domain.models.Address;
+import com.ecommerce.domain.models.Order;
+import com.ecommerce.domain.models.User;
 import com.ecommerce.domain.repository.AddressRepository;
 import com.ecommerce.domain.repository.OrderRepository;
 import com.ecommerce.domain.repository.ProductOrderRepository;
 import com.ecommerce.domain.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +37,7 @@ public class OrderService {
 	@Autowired
 	private UserRepository userRepository;
 
-	public void createOrder(OrderDTOForm orderDTOForm) {
+	public Order createOrder(OrderDTOForm orderDTOForm) {
 
 		BigDecimal subtotal = BigDecimal.ZERO;
 
@@ -51,7 +51,7 @@ public class OrderService {
 		User user = userRepository.findById(orderDTOForm.getCustomerId())
 				.orElseThrow(() -> new EntityNotFoundException("User not exists"));
 
-		Order order = new Order(user, subtotal, freightCharge, subtotal.add(freightCharge), orderDTOForm);
+		Order order = new Order(user, subtotal, freightCharge, subtotal.add(freightCharge));
 
 		Address deliveryAddress = addressRepository.findById(orderDTOForm.getDeliveryAddressId())
 				.orElseThrow(() -> new EntityNotFoundException("Address not exists"));
@@ -61,16 +61,19 @@ public class OrderService {
 
 		productOrderRepository.insertInProductOrder(savedOrder.getId(), orderDTOForm.getProducts());
 
+		order.setProducts(orderDTOForm.getProducts());
+		return findById(savedOrder.getId());
+
 	}
 
-	public ResponseEntity<OrderDTOView> findById(Long orderId, Long userId) {
+	public Order findById(Long orderId) {
 
-		Optional<Order> order = orderRepository.findById(orderId);
+		Order order = orderRepository.findOrderById(orderId);
 
-		if (order.isPresent()) {
-			return ResponseEntity.ok(new OrderDTOView(order.get()));
+		if (order != null) {
+			return order;
 		} else {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+			throw new EntityNotFoundException("Order not exists");
 		}
 	}
 
