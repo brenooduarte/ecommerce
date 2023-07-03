@@ -12,7 +12,7 @@ public interface ProductRepositoryQueries{
 	 Optional<Product> findProductById(Long productId);
 	 Product findByName(String name);
 	 Page<Assessment> findAllByProductId(Long productId, PageRequest pageRequest);
-	 void createAssessment(Assessment assessment, Long productId, Long userId);
+	 Assessment createAssessment(Assessment assessment, Long productId, Long userId);
 	 void createProduct(Product product, Long productId);
 	 Page<Product> viewProductByCategory(Long categoryId, PageRequest pageRequest);
 }

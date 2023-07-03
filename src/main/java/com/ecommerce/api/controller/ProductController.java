@@ -5,7 +5,6 @@ import com.ecommerce.domain.dto.form.ProductDTOFormWithId;
 import com.ecommerce.domain.dto.view.ProductDTOView;
 import com.ecommerce.domain.exceptions.ProductAlreadyExistsException;
 import com.ecommerce.domain.models.Assessment;
-import com.ecommerce.domain.models.Product;
 import com.ecommerce.domain.repository.ProductRepository;
 import com.ecommerce.domain.repository.WishlistRepository;
 import com.ecommerce.domain.service.ProductService;
@@ -13,14 +12,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.NoResultException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/products")
@@ -53,19 +49,6 @@ public class ProductController {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<ProductDTOView> list = productService.listAllActive(pageRequest);
         return ResponseEntity.ok(list);
-    }
-
-    @GetMapping("/wishlist/user/{userId}")
-    public ResponseEntity<List<Product>> listAllProductsInWishlist(
-            @PathVariable Long userId) {
-        try {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(wishlistRepository.listAllProductsInWishlist(userId));
-
-        } catch (EmptyResultDataAccessException e) {
-            return ResponseEntity.noContent()
-                    .build();
-        }
     }
 
     @GetMapping("/categories/{categoryId}")
@@ -118,6 +101,15 @@ public class ProductController {
             return ResponseEntity.badRequest()
                     .body(e.getMessage());
         }
+    }
+
+    @PostMapping("{productId}/user/{userId}")
+    public ResponseEntity<?> addProductInWishlist(
+            @PathVariable Long productId,
+            @PathVariable Long userId
+    ) {
+        wishlistRepository.addProductInWishlist(productId, userId);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PatchMapping("/{productId}/category/{categoryId}")

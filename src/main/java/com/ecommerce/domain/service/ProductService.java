@@ -88,9 +88,7 @@ public class ProductService {
 		productRepository.findProductById(productId)
 				.orElseThrow(() -> new EntityNotFoundException("Product not found"));
 
-		productRepository.createAssessment(assessment, productId, userId);
-
-		return assessment;
+		return productRepository.createAssessment(assessment, productId, userId);
     }
 
 	public boolean setActivePromotion(Long productId) {

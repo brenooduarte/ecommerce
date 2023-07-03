@@ -17,8 +17,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
 import java.util.List;
 import java.util.Optional;
 
@@ -119,9 +123,28 @@ public class ProductRepositoryImpl implements ProductRepositoryQueries {
 	}
 
 	@Override
-	public void createAssessment(Assessment assessment, Long userId, Long productId) {
+	public Assessment createAssessment(Assessment assessment, Long userId, Long productId) {
 		String sql = "INSERT INTO tb_assessment (comment, score, user_id, product_id) VALUES (?, ?, ?, ?)";
-		jdbcTemplate.update(sql, assessment.getComment(), assessment.getScore(), userId, productId);
+
+		// Usar o KeyHolder para recuperar a chave primária gerada
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+
+		jdbcTemplate.update((PreparedStatementCreator) connection -> {
+			PreparedStatement ps = connection.prepareStatement(sql, new String[]{"id"});
+			ps.setString(1, assessment.getComment());
+			ps.setString(2, assessment.getScore());
+			ps.setLong(3, userId);
+			ps.setLong(4, productId);
+			return ps;
+		}, keyHolder);
+
+		// Obter o ID gerado
+		if (keyHolder.getKey() != null) {
+			int assessmentId = keyHolder.getKey().intValue();
+			assessment.setId((long) assessmentId);
+		}
+
+		return assessment;
 	}
 
 	@Override
