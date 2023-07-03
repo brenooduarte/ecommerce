@@ -2,9 +2,12 @@ package com.ecommerce.infraestructure.Impl;
 
 import com.ecommerce.domain.models.Assessment;
 import com.ecommerce.domain.models.Product;
+import com.ecommerce.infraestructure.Spec.ProductSpecification;
 import com.ecommerce.infraestructure.query.ProductRepositoryQueries;
 import com.ecommerce.utils.GlobalConstants;
-import jakarta.persistence.*;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,12 +19,12 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Repository
 public class ProductRepositoryImpl implements ProductRepositoryQueries {
@@ -42,8 +45,8 @@ public class ProductRepositoryImpl implements ProductRepositoryQueries {
 
 		criteriaQuery.select(productRoot);
 
-		criteriaQuery.where(
-				criteriaBuilder.equal(productRoot.get("status"), GlobalConstants.ACTIVE));
+		criteriaQuery.where(criteriaBuilder.equal(productRoot.get("status"), GlobalConstants.ACTIVE));
+
 		productRoot.fetch("assessments", JoinType.LEFT);
 		productRoot.fetch("category", JoinType.LEFT);
 
@@ -68,7 +71,10 @@ public class ProductRepositoryImpl implements ProductRepositoryQueries {
 
 		criteriaQuery.select(productRoot);
 
-		criteriaQuery.where(criteriaBuilder.equal(productRoot.get("id"), productId));
+		criteriaQuery.where(
+				criteriaBuilder.equal(productRoot.get("status"), GlobalConstants.ACTIVE),
+				criteriaBuilder.equal(productRoot.get("id"), productId));
+
 		productRoot.fetch("assessments", JoinType.LEFT);
 		productRoot.fetch("category", JoinType.LEFT);
 
@@ -86,9 +92,10 @@ public class ProductRepositoryImpl implements ProductRepositoryQueries {
 
 		criteriaQuery.select(productRoot);
 
-		Predicate predicate = criteriaBuilder.like(productRoot.get("name"), "%" + name + "%");
+		criteriaQuery.where(
+				criteriaBuilder.equal(productRoot.get("status"), GlobalConstants.ACTIVE),
+				criteriaBuilder.like(productRoot.get("name"), "%" + name + "%"));
 
-		criteriaQuery.where(predicate);
 		productRoot.fetch("assessments", JoinType.LEFT);
 		productRoot.fetch("category", JoinType.LEFT);
 
@@ -106,7 +113,10 @@ public class ProductRepositoryImpl implements ProductRepositoryQueries {
 
 		criteriaQuery.select(productRoot);
 
-		criteriaQuery.where(criteriaBuilder.equal(productRoot.get("name"), name));
+		criteriaQuery.where(
+				criteriaBuilder.equal(productRoot.get("status"), GlobalConstants.ACTIVE),
+				criteriaBuilder.equal(productRoot.get("name"), name));
+
 		productRoot.fetch("assessments", JoinType.LEFT);
 		productRoot.fetch("category", JoinType.LEFT);
 
@@ -124,7 +134,10 @@ public class ProductRepositoryImpl implements ProductRepositoryQueries {
 
 		criteriaQuery.select(assessmentRoot);
 
-		criteriaQuery.where(criteriaBuilder.equal(productRoot.get("id"), productId));
+		criteriaQuery.where(
+				criteriaBuilder.equal(productRoot.get("status"), GlobalConstants.ACTIVE),
+				criteriaBuilder.equal(productRoot.get("id"), productId));
+
 		int offset = pageRequest.getPageNumber() * pageRequest.getPageSize();
 		int limit = pageRequest.getPageSize();
 
@@ -167,6 +180,7 @@ public class ProductRepositoryImpl implements ProductRepositoryQueries {
 		jdbcTemplate
 				.update(sql, product.getName(), product.getPrice(), product.getDescription(), product.getImage(), product.isHighlight(),
 						product.isPromotion(), product.getPromotionPrice(), GlobalConstants.ACTIVE, categoryId);
+		//todo: retornar o produto
 	}
 
 	@Override
@@ -182,6 +196,43 @@ public class ProductRepositoryImpl implements ProductRepositoryQueries {
 		criteriaQuery.where(
 				criteriaBuilder.equal(productRoot.get("status"), GlobalConstants.ACTIVE),
 				criteriaBuilder.equal(productRoot.get("category").get("id"), categoryId));
+
+		productRoot.fetch("assessments", JoinType.LEFT);
+		productRoot.fetch("category", JoinType.LEFT);
+
+		int offset = pageRequest.getPageNumber() * pageRequest.getPageSize();
+		int limit = pageRequest.getPageSize();
+
+		List<Product> query = entityManager.createQuery(criteriaQuery)
+				.setFirstResult(offset)
+				.setMaxResults(limit)
+				.getResultList();
+
+		return new PageImpl<>(query);
+
+	}
+
+	@Override
+	public Page<Product> findProductsByPriceRange(BigDecimal minPrice, BigDecimal maxPrice, PageRequest pageRequest) {
+
+		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Product> criteriaQuery = criteriaBuilder.createQuery(Product.class);
+		Root<Product> productRoot = criteriaQuery.from(Product.class);
+
+		criteriaQuery.select(productRoot);
+
+		Predicate predicate = criteriaBuilder.conjunction();
+
+		if (minPrice != null)
+			predicate = criteriaBuilder.and(predicate, criteriaBuilder.greaterThanOrEqualTo(productRoot.get("price"), minPrice));
+
+		if (maxPrice != null)
+			predicate = criteriaBuilder.and(predicate, criteriaBuilder.lessThanOrEqualTo(productRoot.get("price"), maxPrice));
+
+		predicate = criteriaBuilder.and(predicate, criteriaBuilder.equal(productRoot.get("status"), GlobalConstants.ACTIVE));
+
+		criteriaQuery.where(predicate);
+
 		productRoot.fetch("assessments", JoinType.LEFT);
 		productRoot.fetch("category", JoinType.LEFT);
 

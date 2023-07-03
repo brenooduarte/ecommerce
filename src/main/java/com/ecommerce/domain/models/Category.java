@@ -1,5 +1,6 @@
 package com.ecommerce.domain.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -23,6 +24,7 @@ public class Category {
 
     @OneToMany
     @JoinColumn(name = "category_id")
+    @JsonManagedReference
     private List<Product> products;
 
     public Category(String image, String name) {

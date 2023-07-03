@@ -6,6 +6,7 @@ import com.ecommerce.domain.dto.form.ProductDTOFormWithId;
 import com.ecommerce.domain.dto.view.ProductDTOView;
 import com.ecommerce.domain.exceptions.ProductAlreadyExistsException;
 import com.ecommerce.domain.models.Assessment;
+import com.ecommerce.domain.models.Product;
 import com.ecommerce.domain.repository.ProductRepository;
 import com.ecommerce.domain.repository.WishlistRepository;
 import com.ecommerce.domain.service.ProductService;
@@ -19,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 @RestController
@@ -65,6 +67,21 @@ public class ProductController {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<ProductDTOView> list = productService.listAllActive(pageRequest);
         return ResponseEntity.ok(list);
+    }
+
+    @GetMapping("/filters")
+    public ResponseEntity<Page<Product>> findProductsByPriceRange(
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "size", defaultValue = "10") Integer size,
+            @RequestParam(value = "min_price", defaultValue = "0") BigDecimal minPrice,
+            @RequestParam(value = "max_price", defaultValue = "100") BigDecimal maxPrice
+    ) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return ResponseEntity.ok(productRepository.findProductsByPriceRange(minPrice, maxPrice, pageRequest));
+
+//        PageRequest pageRequest = PageRequest.of(page, size);
+//        Page<ProductDTOView> list = productService.listAllActive(pageRequest);
+//        return ResponseEntity.ok(list);
     }
 
     @GetMapping("/categories/{categoryId}")

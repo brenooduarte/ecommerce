@@ -3,6 +3,7 @@ package com.ecommerce.domain.models;
 import com.ecommerce.domain.dto.form.ProductDTOForm;
 import com.ecommerce.domain.dto.form.ProductDTOFormWithId;
 import com.ecommerce.utils.GlobalConstants;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -50,6 +51,7 @@ public class Product {
 
     @ManyToOne
     @JoinColumn(name = "category_id")
+    @JsonBackReference
     private Category category;
 
     public Product(ProductDTOForm productDTOForm){

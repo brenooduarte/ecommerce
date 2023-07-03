@@ -10,12 +10,14 @@ import com.ecommerce.domain.models.Assessment;
 import com.ecommerce.domain.models.Category;
 import com.ecommerce.domain.models.Product;
 import com.ecommerce.domain.repository.*;
+import com.ecommerce.infraestructure.Spec.ProductSpecification;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -126,5 +128,9 @@ public class ProductService {
 	public Set<ProductDTOView> findAllProductLikeName(String productName) {
 		Set<Product> products = productRepository.findAllProductLikeName(productName);
 		return products.stream().map(ProductDTOView::new).collect(Collectors.toSet());
+	}
+
+	public Page<Product> findProductsByPriceRange(BigDecimal minPrice, BigDecimal maxPrice, PageRequest pageRequest) {
+		return productRepository.findProductsByPriceRange(minPrice, maxPrice, pageRequest);
 	}
 }

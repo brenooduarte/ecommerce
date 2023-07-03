@@ -3,8 +3,9 @@ package com.ecommerce.domain.repository;
 import com.ecommerce.domain.models.Product;
 import com.ecommerce.infraestructure.query.ProductRepositoryQueries;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Product, Long>, ProductRepositoryQueries {
+public interface ProductRepository extends JpaRepository<Product, Long>, ProductRepositoryQueries, JpaSpecificationExecutor<Product> {
 }
