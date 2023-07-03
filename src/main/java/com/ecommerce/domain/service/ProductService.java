@@ -17,6 +17,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -121,4 +123,8 @@ public class ProductService {
 		category.addProduct(product);
 	}
 
+	public Set<ProductDTOView> findAllProductLikeName(String productName) {
+		Set<Product> products = productRepository.findAllProductLikeName(productName);
+		return products.stream().map(ProductDTOView::new).collect(Collectors.toSet());
+	}
 }

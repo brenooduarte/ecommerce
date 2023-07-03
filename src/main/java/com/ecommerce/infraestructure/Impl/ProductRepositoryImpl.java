@@ -4,14 +4,8 @@ import com.ecommerce.domain.models.Assessment;
 import com.ecommerce.domain.models.Product;
 import com.ecommerce.infraestructure.query.ProductRepositoryQueries;
 import com.ecommerce.utils.GlobalConstants;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.*;
+import jakarta.persistence.criteria.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -23,8 +17,11 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Repository
 public class ProductRepositoryImpl implements ProductRepositoryQueries {
@@ -80,24 +77,41 @@ public class ProductRepositoryImpl implements ProductRepositoryQueries {
 	}
 
 	@Override
+	public Set<Product> findAllProductLikeName(String name) {
+
+		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Product> criteriaQuery = criteriaBuilder.createQuery(Product.class);
+
+		Root<Product> productRoot = criteriaQuery.from(Product.class);
+
+		criteriaQuery.select(productRoot);
+
+		Predicate predicate = criteriaBuilder.like(productRoot.get("name"), "%" + name + "%");
+
+		criteriaQuery.where(predicate);
+		productRoot.fetch("assessments", JoinType.LEFT);
+		productRoot.fetch("category", JoinType.LEFT);
+
+		return new HashSet<>(entityManager.createQuery(criteriaQuery).getResultList());
+
+	}
+
+	@Override
 	public Product findByName(String name) {
-		try {
-			CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-			CriteriaQuery<Product> criteriaQuery = criteriaBuilder.createQuery(Product.class);
 
-			Root<Product> productRoot = criteriaQuery.from(Product.class);
+		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Product> criteriaQuery = criteriaBuilder.createQuery(Product.class);
 
-			criteriaQuery.select(productRoot);
+		Root<Product> productRoot = criteriaQuery.from(Product.class);
 
-			criteriaQuery.where(criteriaBuilder.equal(productRoot.get("name"), name));
-			productRoot.fetch("assessments", JoinType.LEFT);
-			productRoot.fetch("category", JoinType.LEFT);
+		criteriaQuery.select(productRoot);
 
-			return entityManager.createQuery(criteriaQuery).getSingleResult();
+		criteriaQuery.where(criteriaBuilder.equal(productRoot.get("name"), name));
+		productRoot.fetch("assessments", JoinType.LEFT);
+		productRoot.fetch("category", JoinType.LEFT);
 
-		} catch (NoResultException e) {
-			return null;
-		}
+		return entityManager.createQuery(criteriaQuery).getSingleResult();
+
 	}
 
 	@Override

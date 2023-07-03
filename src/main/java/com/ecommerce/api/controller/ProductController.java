@@ -19,6 +19,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Set;
+
 @RestController
 @RequestMapping("/products")
 @Tag(name = "Product", description = "Controller de Product")
@@ -37,6 +39,19 @@ public class ProductController {
     public ResponseEntity<ProductDTOView> findById(@PathVariable Long productId) {
         try {
             return ResponseEntity.ok(new ProductDTOView(productService.findProductById(productId)));
+        } catch (NoResultException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Set<ProductDTOView>> findAllProductLikeName(
+            @RequestParam(value = "name") String productName) {
+        try {
+            if (productName != null)
+                return ResponseEntity.ok(productService.findAllProductLikeName(productName));
+            else
+                return ResponseEntity.badRequest().build();
         } catch (NoResultException e) {
             return ResponseEntity.notFound().build();
         }
