@@ -1,5 +1,6 @@
 package com.ecommerce.api.controller;
 
+import com.ecommerce.domain.dto.form.AssessmentDTOForm;
 import com.ecommerce.domain.dto.form.ProductDTOForm;
 import com.ecommerce.domain.dto.form.ProductDTOFormWithId;
 import com.ecommerce.domain.dto.view.ProductDTOView;
@@ -88,14 +89,14 @@ public class ProductController {
 
     @PostMapping("{productId}/assessments/user/{userId}")
     public ResponseEntity<?> addAssessment(
-            @RequestBody Assessment assessment,
+            @RequestBody AssessmentDTOForm assessmentDTOForm,
             @PathVariable Long productId,
             @PathVariable Long userId
     ) {
 
         try {
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(productService.addAssessment(assessment, productId, userId));
+                    .body(productService.addAssessment(assessmentDTOForm, productId, userId));
 
         } catch (EntityNotFoundException e) {
             return ResponseEntity.badRequest()

@@ -1,5 +1,6 @@
 package com.ecommerce.domain.service;
 
+import com.ecommerce.domain.dto.form.AssessmentDTOForm;
 import com.ecommerce.domain.dto.form.ProductDTOForm;
 import com.ecommerce.domain.dto.form.ProductDTOFormWithId;
 import com.ecommerce.domain.dto.view.ProductDTOView;
@@ -84,10 +85,11 @@ public class ProductService {
 		throw new EntityNotFoundException("Product not exists");
 	}
 
-    public Assessment addAssessment(Assessment assessment, Long productId, Long userId) {
+    public Assessment addAssessment(AssessmentDTOForm assessmentDTOForm, Long productId, Long userId) {
 		productRepository.findProductById(productId)
 				.orElseThrow(() -> new EntityNotFoundException("Product not found"));
 
+		Assessment assessment = new Assessment(assessmentDTOForm);
 		return productRepository.createAssessment(assessment, productId, userId);
     }
 
