@@ -9,13 +9,13 @@ import com.ecommerce.domain.repository.UserRepository;
 import com.ecommerce.domain.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/users")
@@ -30,9 +30,8 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<List<UserDTOView>> list() {
-//        return new ResponseEntity<List<User>>(userRepository.findAll(), HttpStatus.OK);
-        //TODO resolver se irá existir um get all users e qual a intenção disso
-    	return null;
+        List<UserDTOView> usersDTO = userService.listAllUsers();
+        return ResponseEntity.ok(usersDTO);
     }
 
     @GetMapping("/{userId}")
@@ -40,7 +39,13 @@ public class UserController {
     	UserDTOView userDTOView = userService.getById(userId);
         return ResponseEntity.ok(userDTOView);
     }
-    
+
+    @GetMapping("/admins/{userId}")
+    public ResponseEntity<List<UserDTOView>> listAdmin(@PathVariable Long userId) {
+        List<UserDTOView> adminList = userService.listAdmin(userId);
+        return ResponseEntity.ok(adminList);
+    }
+
     @GetMapping("/active")
     public ResponseEntity<List<UserDTOView>> listAllActive() {
 //        return new ResponseEntity<List<UserDTOView>>(userService.listAllActive(), HttpStatus.OK);
@@ -51,25 +56,29 @@ public class UserController {
     @PostMapping
     public ResponseEntity<?> add(@RequestBody UserDTOForm userDTO) throws UserAlreadyExistsException {
         try {
-            userService.createUser(userDTO);
+            User newUser = userService.createUser(userDTO);
+            UserDTOView userDTOView = new UserDTOView(newUser);
 
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .build();
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.badRequest()
-                    .body(e.getMessage());
+                    .body(userDTOView);
+        } catch (UserAlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("User already exists.");
         }
     }
 
 	@PutMapping("/{userId}")
-	public ResponseEntity<UserDTOView> update(@PathVariable Long userId, @RequestBody UserDTOForm userDTOForm) {
+	public ResponseEntity<UserDTOView> update(
+            @PathVariable Long userId,
+            @RequestBody UserDTOForm userDTOForm) {
 
-		User user = userService.updateUser(userId, userDTOForm);
-
-        UserDTOView userDTOView = new UserDTOView();
-        BeanUtils.copyProperties(user, userDTOView);
-
-		return ResponseEntity.ok(userDTOView);
+        try {
+            User updatedUser = userService.updateUser(userId, userDTOForm);
+            UserDTOView userDTOView = new UserDTOView(updatedUser);
+            return ResponseEntity.ok(userDTOView);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
 	}
 
     @DeleteMapping("/{userId}")

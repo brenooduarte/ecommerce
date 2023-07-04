@@ -1,13 +1,18 @@
 package com.ecommerce.domain.models;
 
-import java.util.List;
-
+import com.ecommerce.domain.dto.form.UserDTOForm;
+import com.ecommerce.domain.enums.UserType;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Data
 @Table(name = "tb_user")
+@NoArgsConstructor
 public class User {
 
     @Id
@@ -23,15 +28,25 @@ public class User {
     @Column
     private String password;
 
+    @Column(name = "user_type")
+    private UserType userType;
+
     @OneToMany
-    @JoinColumn(name = "assessment_id")
+    @JoinColumn(name = "user_id")
     private List<Assessment> assessments;
+    
+    @OneToMany(mappedBy = "customer")
+    @JsonBackReference
+    private List<Order> orders;
+    
+    @Column(name = "address_type")
+    private Long addressType;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<UserAddress> address;
-
-    public void addAddress(UserAddress userAddress) {
-        this.address.add(userAddress);
+    public User(UserDTOForm userDTOForm) {
+        this.name = userDTOForm.getName();
+        this.email = userDTOForm.getEmail();
+        this.password = userDTOForm.getPassword();
+        this.userType = userDTOForm.getUserType();
     }
 
     public void addAssessment(Assessment assessment) {

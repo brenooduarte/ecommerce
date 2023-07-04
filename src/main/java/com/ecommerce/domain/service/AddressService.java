@@ -23,10 +23,7 @@ public class AddressService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private UserAddressRepository userAddressRepository;
-
-    public void createAddress(AddressDTOForm addressDTOForm, Long userId) {
+    public Address createAddress(AddressDTOForm addressDTOForm, Long userId) {
 
         State state = stateRepository.findByName(addressDTOForm.getStateName());
 
@@ -35,31 +32,21 @@ public class AddressService {
             stateRepository.save(state);
         }
 
-        City city = cityRepository.findByNameAndState(addressDTOForm.getStateName(), state);
+        City city = cityRepository.findByNameAndState(addressDTOForm.getCityName(), state);
 
         if (city == null) {
             city = new City(addressDTOForm.getCityName(), state);
             cityRepository.save(city);
         }
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
-
-        Address address = new Address();
-        BeanUtils.copyProperties(addressDTOForm, address, "stateName", "cityName");
-        address.setCity(city);
-        addressRepository.save(address);
-
-        UserAddress userAddress = new UserAddress(user, address);
-        userAddressRepository.save(userAddress);
-
-        user.addAddress(userAddress);
+        Address address = new Address(addressDTOForm, city);
+        return addressRepository.createAddress(address, userId);
 
     }
 
-    public void updateAddress(AddressDTOForm addressDTOForm, Long id) {
+    public Address updateAddress(AddressDTOForm addressDTOForm, Long addressId) {
 
-        Address address = addressRepository.findById(id)
+        Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new EntityNotFoundException("Address not found"));
 
         BeanUtils.copyProperties(addressDTOForm, address, "stateName", "cityName");
@@ -79,7 +66,21 @@ public class AddressService {
         }
 
         address.setCity(city);
-        addressRepository.save(address);
+        return addressRepository.save(address);
     }
 
+    public void setAddressType(Long addressType, Long userId) {
+        addressRepository.findById(addressType)
+                .orElseThrow(() -> new EntityNotFoundException("Address not found"));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        user.setAddressType(addressType);
+        userRepository.save(user);
+    }
+
+    public Address findByAddressIdAndUserId(Long addressId, Long userId) {
+        return addressRepository.findByAddressIdAndUserId(addressId, userId);
+    }
 }

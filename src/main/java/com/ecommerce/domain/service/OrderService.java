@@ -1,22 +1,25 @@
 package com.ecommerce.domain.service;
 
 import com.ecommerce.domain.dto.form.OrderDTOForm;
+import com.ecommerce.domain.dto.form.ProductDTOFormWithId;
+import com.ecommerce.domain.dto.view.OrderDTOView;
 import com.ecommerce.domain.enums.StatusOrder;
-import com.ecommerce.domain.models.*;
+import com.ecommerce.domain.models.Address;
+import com.ecommerce.domain.models.Order;
+import com.ecommerce.domain.models.User;
 import com.ecommerce.domain.repository.AddressRepository;
 import com.ecommerce.domain.repository.OrderRepository;
 import com.ecommerce.domain.repository.ProductOrderRepository;
+import com.ecommerce.domain.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -30,84 +33,90 @@ public class OrderService {
 	@Autowired
 	private AddressRepository addressRepository;
 
-	public void createOrder(OrderDTOForm orderDTOForm) {
+	@Autowired
+	private UserRepository userRepository;
+
+	public Order createOrder(OrderDTOForm orderDTOForm) {
 
 		BigDecimal subtotal = BigDecimal.ZERO;
 
 		// TODO: Calculate freight charge
 		BigDecimal freightCharge = BigDecimal.valueOf(100);
 
-		for (Product product : orderDTOForm.getProducts()) {
+		for (ProductDTOFormWithId product : orderDTOForm.getProducts()) {
 			subtotal = subtotal.add(product.getPrice());
 		}
-		Order order = new Order(subtotal, freightCharge, subtotal.add(freightCharge));
-		BeanUtils.copyProperties(orderDTOForm, order, "delivery_address_id");
+
+		User user = userRepository.findById(orderDTOForm.getCustomerId())
+				.orElseThrow(() -> new EntityNotFoundException("User not exists"));
+
+		Order order = new Order(user, subtotal, freightCharge, subtotal.add(freightCharge));
 
 		Address deliveryAddress = addressRepository.findById(orderDTOForm.getDeliveryAddressId())
 				.orElseThrow(() -> new EntityNotFoundException("Address not exists"));
 
 		order.setDeliveryAddress(deliveryAddress);
-		orderRepository.save(order);
+		Order savedOrder = orderRepository.save(order);
 
-		for (Product product : orderDTOForm.getProducts()) {
-			productOrderRepository.save(new ProductOrder(order, product));
-		}
+		productOrderRepository.insertInProductOrder(savedOrder.getId(), orderDTOForm.getProducts());
+
+		order.setProducts(orderDTOForm.getProducts());
+		return findById(savedOrder.getId());
 
 	}
 
-	public ResponseEntity<Order> findById(Long orderId, Long userId) {
+	public Order findById(Long orderId) {
 
-		Optional<Order> order = orderRepository.findById(orderId);
-		ResponseEntity<Order> responseEntity;
+		Order order = orderRepository.findOrderById(orderId);
 
-		if (order.isEmpty()){
-			responseEntity = ResponseEntity.notFound().build();
-		}
-
-		User user = order.get().getCustomer();
-
-		if (Objects.equals(user.getId(), userId)) {
-			responseEntity = ResponseEntity.ok(order.get());
+		if (order != null) {
+			return order;
 		} else {
-			responseEntity = ResponseEntity.status(403).build();
+			throw new EntityNotFoundException("Order not exists");
 		}
-
-		return responseEntity;
 	}
 
-	public ResponseEntity<Order> setStatusOrder(Long orderId, Long userId, String status) {
+	public Order setStatusOrder(Long orderId, String status) throws Exception {
 
 		status = status.toUpperCase();
 
-		Order order = findById(orderId, userId).getBody();
+		Optional<Order> orderOptional = orderRepository.findById(orderId);
+		Order order;
 
-		if (order == null) {
-			return ResponseEntity.notFound().build();
+		if (orderOptional.isEmpty()) {
+			throw new EntityNotFoundException("Order not exists");
+		} else {
+			order = orderOptional.get();
 		}
 
 		switch (status) {
-			case "CONFIRMED":
+			case "CONFIRMED" -> {
 				order.setStatusOrder(StatusOrder.valueOf("CONFIRMED"));
 				order.setConfirmationDate(new Date());
-				break;
-			case "DELIVERED":
+			}
+			case "DELIVERED" -> {
 				order.setStatusOrder(StatusOrder.valueOf("DELIVERED"));
 				order.setDeliveryDate(new Date());
-				break;
-			case "CANCELED":
+			}
+			case "CANCELED" -> {
 				order.setStatusOrder(StatusOrder.valueOf("CANCELED"));
 				order.setCancellationDate(new Date());
-				break;
-			default:
-				return ResponseEntity.badRequest().build();
+			}
+			default -> throw new Exception("Status not exists");
 		}
 
-		orderRepository.save(order);
-		return ResponseEntity.ok(order);
+		return orderRepository.save(order);
 	}
 
-	public List<Order> findAllByUserId(Long userId) {
-		// TODO: Implement pagination
-		return orderRepository.findAllByUserId(userId);
+	public List<OrderDTOView> listAll(Long userId) {
+		List<Order> orders = orderRepository.listAll(userId);
+		return parseToOrderDTOView(orders);
 	}
+
+	private List<OrderDTOView> parseToOrderDTOView(List<Order> orders) {
+		return orders.stream()
+				.map(OrderDTOView::new)
+				.collect(Collectors.toList());
+	}
+
 }

@@ -1,19 +1,23 @@
 package com.ecommerce.domain.service;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-
+import com.ecommerce.domain.dto.form.UserDTOForm;
+import com.ecommerce.domain.dto.view.UserDTOView;
+import com.ecommerce.domain.enums.UserType;
+import com.ecommerce.domain.exceptions.UserAlreadyExistsException;
+import com.ecommerce.domain.models.User;
+import com.ecommerce.domain.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
-import com.ecommerce.domain.dto.form.UserDTOForm;
-import com.ecommerce.domain.dto.view.UserDTOView;
-import com.ecommerce.domain.exceptions.UserAlreadyExistsException;
-import com.ecommerce.domain.models.User;
-import com.ecommerce.domain.repository.UserRepository;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+
 
 @Service
 public class UserService {
@@ -23,21 +27,41 @@ public class UserService {
 
 	public UserDTOView getById(long id) {
 	    Optional<User> userOptional = userRepository.findById(id);
-	    UserDTOView userDTOView = new UserDTOView();
 
 	    if (userOptional.isPresent()) {
 	        User user = userOptional.get();
-	        BeanUtils.copyProperties(user, userDTOView);
+			return new UserDTOView(user);
 	    } else {
 	        throw new NotFoundException("USER NOT FOUND");
 	    }
-
-	    return userDTOView;
 	}
 
-	public List<User> listAllUsers() {
-		return (List<User>) userRepository.findAll();
-		//TODO Retornar DTO VIEW
+	public List<UserDTOView> listAllUsers() {
+		List<User> users = userRepository.findAll();
+		List<UserDTOView> usersDTO = new ArrayList<>();
+
+		for (User user : users) {
+			try {
+				UserDTOView userDTO = new UserDTOView(user);
+				usersDTO.add(userDTO);
+			} catch (BeansException e) {
+				e.printStackTrace();
+			}
+		}
+		return usersDTO;
+	}
+
+	public List<UserDTOView> listAdmin(Long userId) {
+		User admin = userRepository.findByIdAndUserType(userId, UserType.ADMIN);
+		List<UserDTOView> adminDTOList = new ArrayList<>();
+
+		if (admin == null) {
+			throw new EntityNotFoundException("THIS USER IS NOT ADMIN OR DOES NOT EXIST");
+		}
+
+		UserDTOView adminDTO = new UserDTOView(admin);
+		adminDTOList.add(adminDTO);
+		return adminDTOList;
 	}
 
 	public User createUser(UserDTOForm userDTO) throws UserAlreadyExistsException {
@@ -45,10 +69,15 @@ public class UserService {
 		User newUser = userRepository.findByEmail(userDTO.getEmail());
 
 		if (newUser == null) {
-
 			newUser = new User();
-
 			BeanUtils.copyProperties(userDTO, newUser);
+
+			if (userDTO.getUserType() != null) {
+				newUser.setUserType(userDTO.getUserType());
+			} else {
+				newUser.setUserType(UserType.USER);
+			}
+
 			return userRepository.save(newUser);
 		} else {
 			throw new UserAlreadyExistsException();
