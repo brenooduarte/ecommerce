@@ -61,7 +61,7 @@ public class Product {
         this.image = productDTOForm.getImage();
         this.highlight = productDTOForm.isHighlight();
         this.promotion = productDTOForm.isPromotion();
-        this.promotionPrice = productDTOForm.getPricePromotion();
+        this.promotionPrice = productDTOForm.getPromotionPrice();
     }
 
     public Product(ProductDTOFormWithId productDTOFormWithId) {
@@ -72,7 +72,7 @@ public class Product {
         this.image = productDTOFormWithId.getImage();
         this.highlight = productDTOFormWithId.isHighlight();
         this.promotion = productDTOFormWithId.isPromotion();
-        this.promotionPrice = productDTOFormWithId.getPricePromotion();
+        this.promotionPrice = productDTOFormWithId.getPromotionPrice();
     }
 
     public void addAssessment(Assessment assessment) {

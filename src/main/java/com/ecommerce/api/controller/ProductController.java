@@ -12,7 +12,6 @@ import com.ecommerce.domain.repository.WishlistRepository;
 import com.ecommerce.domain.service.ProductService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.NoResultException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -38,10 +37,10 @@ public class ProductController {
     private WishlistRepository wishlistRepository;
 
     @GetMapping("/{productId}")
-    public ResponseEntity<ProductDTOView> findById(@PathVariable Long productId) {
+    public ResponseEntity<ProductDTOView> findProductById(@PathVariable Long productId) {
         try {
-            return ResponseEntity.ok(new ProductDTOView(productService.findProductById(productId)));
-        } catch (NoResultException e) {
+            return ResponseEntity.ok(productService.findProductById(productId));
+        } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
     }
@@ -54,7 +53,7 @@ public class ProductController {
                 return ResponseEntity.ok(productService.findAllProductLikeName(productName));
             else
                 return ResponseEntity.badRequest().build();
-        } catch (NoResultException e) {
+        } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
     }
@@ -78,10 +77,6 @@ public class ProductController {
     ) {
         PageRequest pageRequest = PageRequest.of(page, size);
         return ResponseEntity.ok(productRepository.findProductsByPriceRange(minPrice, maxPrice, pageRequest));
-
-//        PageRequest pageRequest = PageRequest.of(page, size);
-//        Page<ProductDTOView> list = productService.listAllActive(pageRequest);
-//        return ResponseEntity.ok(list);
     }
 
     @GetMapping("/categories/{categoryId}")
@@ -97,13 +92,13 @@ public class ProductController {
     }
 
     @GetMapping("{productId}/assessments")
-    public Page<Assessment> findAllByProductId(
+    public Page<Assessment> findAllAssessmentsByProductId(
             @PathVariable Long productId,
             @RequestParam(value = "page", defaultValue = "0") Integer page,
             @RequestParam(value = "size", defaultValue = "10") Integer size
     ) {
         PageRequest pageRequest = PageRequest.of(page, size);
-        return productService.findAllByProductId(productId, pageRequest);
+        return productService.findAllAssessmentsByProductId(productId, pageRequest);
     }
 
     @PostMapping
@@ -120,19 +115,17 @@ public class ProductController {
     }
 
     @PostMapping("{productId}/assessments/user/{userId}")
-    public ResponseEntity<?> addAssessment(
+    public ResponseEntity<Assessment> addAssessment(
             @RequestBody AssessmentDTOForm assessmentDTOForm,
             @PathVariable Long productId,
             @PathVariable Long userId
     ) {
-
         try {
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(productService.addAssessment(assessmentDTOForm, productId, userId));
 
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.badRequest()
-                    .body(e.getMessage());
+            return ResponseEntity.notFound().build();
         }
     }
 

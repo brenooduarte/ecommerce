@@ -32,7 +32,7 @@ public class ProductOrderRepositoryImpl implements ProductOrderRepositoryQueries
                 sqlBuilder.append("(?, ?, ?, ?)");
 
                 args.add(productDTOForm.getPrice());
-                args.add(productDTOForm.getPricePromotion());
+                args.add(productDTOForm.getPromotionPrice());
                 args.add(orderId);
                 args.add(productDTOForm.getId());
 

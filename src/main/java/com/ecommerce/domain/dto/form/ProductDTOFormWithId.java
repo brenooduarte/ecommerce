@@ -1,6 +1,7 @@
 package com.ecommerce.domain.dto.form;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -8,24 +9,28 @@ import java.math.BigDecimal;
 @Data
 public class ProductDTOFormWithId {
 
+    @NotBlank
     private Long id;
 
+    @NotBlank
     private String name;
 
+    @Positive
     private BigDecimal price;
 
     private String description;
 
+    @NotBlank
     private String image;
 
     private boolean highlight;
 
     private boolean promotion;
 
-    @JsonProperty("price_promotion")
-    private BigDecimal pricePromotion;
+    @Positive
+    private BigDecimal promotionPrice;
 
-    @JsonProperty("category_id")
+    @NotBlank
     private Long categoryId;
 
 }
