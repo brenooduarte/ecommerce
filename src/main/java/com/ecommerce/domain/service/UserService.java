@@ -1,6 +1,7 @@
 package com.ecommerce.domain.service;
 
 import com.ecommerce.domain.dto.form.UserDTOForm;
+import com.ecommerce.domain.dto.form.UserDTOUpdateForm;
 import com.ecommerce.domain.dto.view.UserDTOView;
 import com.ecommerce.domain.enums.UserType;
 import com.ecommerce.domain.exceptions.UserAlreadyExistsException;
@@ -64,7 +65,7 @@ public class UserService {
 		return adminDTOList;
 	}
 
-	public User createUser(UserDTOForm userDTOForm) throws UserAlreadyExistsException {
+	public UserDTOView createUser(UserDTOForm userDTOForm) {
 
 		User newUser = new User(userDTOForm);
 
@@ -74,22 +75,16 @@ public class UserService {
 			newUser.setUserType(UserType.USER);
 		}
 
-		return userRepository.save(newUser);
+		return new UserDTOView(userRepository.save(newUser));
 	}
 
-	public User updateUser(Long userId, UserDTOForm newUser) {
+	public UserDTOView updateUser(Long userId, UserDTOUpdateForm userDTO) {
 
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new NoSuchElementException("User not found"));
 
-		BeanUtils.copyProperties(newUser, user);
-
-		try {
-			userRepository.save(user);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return user;
+		BeanUtils.copyProperties(userDTO, user);
+		return new UserDTOView(userRepository.save(user));
 	}
 
 }

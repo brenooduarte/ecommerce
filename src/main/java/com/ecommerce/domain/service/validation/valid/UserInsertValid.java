@@ -1,5 +1,6 @@
-package com.ecommerce.domain.service.validation;
+package com.ecommerce.domain.service.validation.valid;
 
+import com.ecommerce.domain.service.validation.validator.UserInsertValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 

@@ -1,6 +1,8 @@
 package com.ecommerce.api.controller;
 
 import com.ecommerce.domain.dto.form.UserDTOForm;
+import com.ecommerce.domain.dto.form.UserDTOInsertForm;
+import com.ecommerce.domain.dto.form.UserDTOUpdateForm;
 import com.ecommerce.domain.dto.view.UserDTOView;
 import com.ecommerce.domain.exceptions.EntityInUseException;
 import com.ecommerce.domain.exceptions.UserAlreadyExistsException;
@@ -16,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/users")
@@ -55,27 +56,18 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createUser(
-            @Valid @RequestBody UserDTOForm userDTO) throws UserAlreadyExistsException {
-        try {
-            User newUser = userService.createUser(userDTO);
-            UserDTOView userDTOView = new UserDTOView(newUser);
-
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(userDTOView);
-        } catch (UserAlreadyExistsException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body("User already exists.");
-        }
+    public ResponseEntity<?> createUser(@Valid @RequestBody UserDTOInsertForm userDTO) {
+        UserDTOView userDTOView = userService.createUser(userDTO);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(userDTOView);
     }
 
 	@PutMapping("/{userId}")
-	public ResponseEntity<UserDTOView> update(
+	public ResponseEntity<UserDTOView> updateUser(
             @PathVariable Long userId,
-            @Valid @RequestBody UserDTOForm userDTOForm
+            @Valid @RequestBody UserDTOUpdateForm userDTO
     ) {
-        userService.updateUser(userId, userDTOForm);
-        return null;
+        return ResponseEntity.ok(userService.updateUser(userId, userDTO));
 	}
 
     @DeleteMapping("/{userId}")
