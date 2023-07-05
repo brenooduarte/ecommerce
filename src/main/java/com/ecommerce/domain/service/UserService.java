@@ -64,29 +64,23 @@ public class UserService {
 		return adminDTOList;
 	}
 
-	public User createUser(UserDTOForm userDTO) throws UserAlreadyExistsException {
+	public User createUser(UserDTOForm userDTOForm) throws UserAlreadyExistsException {
 
-		User newUser = userRepository.findByEmail(userDTO.getEmail());
+		User newUser = new User(userDTOForm);
 
-		if (newUser == null) {
-			newUser = new User();
-			BeanUtils.copyProperties(userDTO, newUser);
-
-			if (userDTO.getUserType() != null) {
-				newUser.setUserType(userDTO.getUserType());
-			} else {
-				newUser.setUserType(UserType.USER);
-			}
-
-			return userRepository.save(newUser);
+		if (userDTOForm.getUserType() != null) {
+			newUser.setUserType(userDTOForm.getUserType());
 		} else {
-			throw new UserAlreadyExistsException();
+			newUser.setUserType(UserType.USER);
 		}
+
+		return userRepository.save(newUser);
 	}
 
 	public User updateUser(Long userId, UserDTOForm newUser) {
 
-		User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("User not found"));
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new NoSuchElementException("User not found"));
 
 		BeanUtils.copyProperties(newUser, user);
 
@@ -98,7 +92,4 @@ public class UserService {
 		return user;
 	}
 
-	public void deleteUserById(long id) {
-		userRepository.deleteById(id);
-	}
 }

@@ -55,7 +55,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<?> add(
+    public ResponseEntity<?> createUser(
             @Valid @RequestBody UserDTOForm userDTO) throws UserAlreadyExistsException {
         try {
             User newUser = userService.createUser(userDTO);
@@ -72,21 +72,16 @@ public class UserController {
 	@PutMapping("/{userId}")
 	public ResponseEntity<UserDTOView> update(
             @PathVariable Long userId,
-            @Valid @RequestBody UserDTOForm userDTOForm) {
-
-        try {
-            User updatedUser = userService.updateUser(userId, userDTOForm);
-            UserDTOView userDTOView = new UserDTOView(updatedUser);
-            return ResponseEntity.ok(userDTOView);
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.notFound().build();
-        }
+            @Valid @RequestBody UserDTOForm userDTOForm
+    ) {
+        userService.updateUser(userId, userDTOForm);
+        return null;
 	}
 
     @DeleteMapping("/{userId}")
     public ResponseEntity<?> remove(@PathVariable Long userId) {
         try {
-            userService.deleteUserById(userId);
+            //todo: fazr exclusao logica
             return ResponseEntity.noContent().build();
 
         } catch (EntityNotFoundException e) {
