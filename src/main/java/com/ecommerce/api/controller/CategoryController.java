@@ -2,6 +2,7 @@ package com.ecommerce.api.controller;
 
 import java.util.List;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,7 +52,8 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<?> addCategory(@RequestBody CategoryDTOForm categoryDTOForm) {
+    public ResponseEntity<?> addCategory(
+            @Valid @RequestBody CategoryDTOForm categoryDTOForm) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(categoryService.createCategory(categoryDTOForm));
     }
@@ -59,7 +61,7 @@ public class CategoryController {
     @PutMapping("/{categoryId}")
     public ResponseEntity<CategoryDTOView> updateCategoryById(
             @PathVariable Long categoryId,
-            @RequestBody CategoryDTOForm categoryDTOForm) {
+            @Valid @RequestBody CategoryDTOForm categoryDTOForm) {
 
         return ResponseEntity.ok().body(categoryService.updateCategoryById(categoryId, categoryDTOForm));
     }

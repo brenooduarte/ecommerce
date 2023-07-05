@@ -7,6 +7,7 @@ import com.ecommerce.domain.repository.OrderRepository;
 import com.ecommerce.domain.service.OrderService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +38,8 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<OrderDTOView> createOrder(@RequestBody OrderDTOForm orderDTOForm) {
+    public ResponseEntity<OrderDTOView> createOrder(
+            @Valid @RequestBody OrderDTOForm orderDTOForm) {
         try {
             Order order = orderService.createOrder(orderDTOForm);
             return ResponseEntity.status(HttpStatus.CREATED)

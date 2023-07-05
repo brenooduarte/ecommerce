@@ -9,6 +9,7 @@ import com.ecommerce.domain.repository.UserRepository;
 import com.ecommerce.domain.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,7 +55,8 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<?> add(@RequestBody UserDTOForm userDTO) throws UserAlreadyExistsException {
+    public ResponseEntity<?> add(
+            @Valid @RequestBody UserDTOForm userDTO) throws UserAlreadyExistsException {
         try {
             User newUser = userService.createUser(userDTO);
             UserDTOView userDTOView = new UserDTOView(newUser);
@@ -70,7 +72,7 @@ public class UserController {
 	@PutMapping("/{userId}")
 	public ResponseEntity<UserDTOView> update(
             @PathVariable Long userId,
-            @RequestBody UserDTOForm userDTOForm) {
+            @Valid @RequestBody UserDTOForm userDTOForm) {
 
         try {
             User updatedUser = userService.updateUser(userId, userDTOForm);

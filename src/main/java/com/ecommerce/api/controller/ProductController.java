@@ -12,6 +12,7 @@ import com.ecommerce.domain.repository.WishlistRepository;
 import com.ecommerce.domain.service.ProductService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -102,7 +103,8 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductDTOView> createProduct(@RequestBody ProductDTOForm productDTOForm) {
+    public ResponseEntity<ProductDTOView> createProduct(
+            @Valid @RequestBody ProductDTOForm productDTOForm) {
         try {
             ProductDTOView createdProduct = productService.createProduct(productDTOForm);
             return ResponseEntity.status(HttpStatus.CREATED)
@@ -176,7 +178,7 @@ public class ProductController {
 
     @PutMapping("/edit")
     public ResponseEntity<ProductDTOView> updateProduct(
-            @RequestBody ProductDTOFormWithId productDTOFormWithId
+            @Valid @RequestBody ProductDTOFormWithId productDTOFormWithId
     ) {
         try {
             return ResponseEntity.ok(productService.updateProduct(productDTOFormWithId));

@@ -1,6 +1,7 @@
 package com.ecommerce.domain.dto.form;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
@@ -9,7 +10,7 @@ import java.math.BigDecimal;
 @Data
 public class ProductDTOFormWithId {
 
-    @NotBlank
+    @NotNull
     private Long id;
 
     @NotBlank
@@ -30,7 +31,7 @@ public class ProductDTOFormWithId {
     @Positive
     private BigDecimal promotionPrice;
 
-    @NotBlank
+    @NotNull
     private Long categoryId;
 
 }

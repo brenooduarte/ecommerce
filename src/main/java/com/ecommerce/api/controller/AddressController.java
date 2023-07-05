@@ -7,6 +7,7 @@ import com.ecommerce.domain.repository.AddressRepository;
 import com.ecommerce.domain.service.AddressService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -58,7 +59,7 @@ public class AddressController {
 
     @PostMapping("/user/{userId}")
     public ResponseEntity<AddressDTOView> createAddress(
-            @RequestBody AddressDTOForm addressDTOForm,
+            @Valid @RequestBody AddressDTOForm addressDTOForm,
             @PathVariable Long userId
     ) {
         try {
@@ -89,7 +90,7 @@ public class AddressController {
     @PutMapping("/{id}")
     public ResponseEntity<?> update(
             @PathVariable Long id,
-            @RequestBody AddressDTOForm addressDTOForm) {
+            @Valid @RequestBody AddressDTOForm addressDTOForm) {
         try {
             return ResponseEntity.ok()
                     .body(addressService.updateAddress(addressDTOForm, id));
