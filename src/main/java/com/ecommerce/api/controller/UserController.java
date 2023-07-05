@@ -1,12 +1,9 @@
 package com.ecommerce.api.controller;
 
-import com.ecommerce.domain.dto.form.UserDTOForm;
 import com.ecommerce.domain.dto.form.UserDTOInsertForm;
 import com.ecommerce.domain.dto.form.UserDTOUpdateForm;
 import com.ecommerce.domain.dto.view.UserDTOView;
 import com.ecommerce.domain.exceptions.EntityInUseException;
-import com.ecommerce.domain.exceptions.UserAlreadyExistsException;
-import com.ecommerce.domain.models.User;
 import com.ecommerce.domain.repository.UserRepository;
 import com.ecommerce.domain.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -56,7 +53,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createUser(@Valid @RequestBody UserDTOInsertForm userDTO) {
+    public ResponseEntity<UserDTOView> createUser(@Valid @RequestBody UserDTOInsertForm userDTO) {
         UserDTOView userDTOView = userService.createUser(userDTO);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(userDTOView);
@@ -71,9 +68,9 @@ public class UserController {
 	}
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<?> remove(@PathVariable Long userId) {
+    public ResponseEntity<?> removeUser(@PathVariable Long userId) {
         try {
-            //todo: fazr exclusao logica
+            userService.removeUser(userId);
             return ResponseEntity.noContent().build();
 
         } catch (EntityNotFoundException e) {

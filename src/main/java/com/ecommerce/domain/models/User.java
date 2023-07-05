@@ -2,6 +2,7 @@ package com.ecommerce.domain.models;
 
 import com.ecommerce.domain.dto.form.UserDTOForm;
 import com.ecommerce.domain.enums.UserType;
+import com.ecommerce.utils.GlobalConstants;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -31,6 +32,8 @@ public class User {
     @Column(name = "user_type")
     private UserType userType;
 
+    private boolean status;
+
     @OneToMany
     @JoinColumn(name = "user_id")
     private List<Assessment> assessments;
@@ -52,4 +55,10 @@ public class User {
     public void addAssessment(Assessment assessment) {
         this.assessments.add(assessment);
     }
+
+    @PrePersist
+    public void prePersist() {
+        setStatus(GlobalConstants.ACTIVE);
+    }
+
 }

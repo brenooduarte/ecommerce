@@ -7,6 +7,7 @@ import com.ecommerce.domain.enums.UserType;
 import com.ecommerce.domain.exceptions.UserAlreadyExistsException;
 import com.ecommerce.domain.models.User;
 import com.ecommerce.domain.repository.UserRepository;
+import com.ecommerce.utils.GlobalConstants;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
@@ -87,4 +88,11 @@ public class UserService {
 		return new UserDTOView(userRepository.save(user));
 	}
 
+	public void removeUser(Long userId) {
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new NoSuchElementException("User not found"));
+
+		user.setStatus(GlobalConstants.DEACTIVATE);
+		userRepository.save(user);
+	}
 }
