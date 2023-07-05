@@ -1,7 +1,6 @@
 package com.ecommerce.domain.models;
 
 import com.ecommerce.domain.dto.form.UserDTOForm;
-import com.ecommerce.domain.enums.UserType;
 import com.ecommerce.utils.GlobalConstants;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -9,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -29,8 +29,8 @@ public class User {
     @Column
     private String password;
 
-    @Column(name = "user_type")
-    private UserType userType;
+    @OneToMany
+    private Set<Role> roles;
 
     private boolean status;
 
@@ -49,7 +49,7 @@ public class User {
         this.name = userDTOForm.getName();
         this.email = userDTOForm.getEmail();
         this.password = userDTOForm.getPassword();
-        this.userType = userDTOForm.getUserType();
+        this.roles = userDTOForm.getRoles();
     }
 
     public void addAssessment(Assessment assessment) {

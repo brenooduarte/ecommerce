@@ -3,12 +3,9 @@ package com.ecommerce.domain.service;
 import com.ecommerce.domain.dto.form.UserDTOForm;
 import com.ecommerce.domain.dto.form.UserDTOUpdateForm;
 import com.ecommerce.domain.dto.view.UserDTOView;
-import com.ecommerce.domain.enums.UserType;
-import com.ecommerce.domain.exceptions.UserAlreadyExistsException;
 import com.ecommerce.domain.models.User;
 import com.ecommerce.domain.repository.UserRepository;
 import com.ecommerce.utils.GlobalConstants;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,29 +50,21 @@ public class UserService {
 		return usersDTO;
 	}
 
-	public List<UserDTOView> listAdmin(Long userId) {
-		User admin = userRepository.findByIdAndUserType(userId, UserType.ADMIN);
-		List<UserDTOView> adminDTOList = new ArrayList<>();
-
-		if (admin == null) {
-			throw new EntityNotFoundException("THIS USER IS NOT ADMIN OR DOES NOT EXIST");
-		}
-
-		UserDTOView adminDTO = new UserDTOView(admin);
-		adminDTOList.add(adminDTO);
-		return adminDTOList;
-	}
+//	public List<UserDTOView> listAdmin(Long userId) {
+////		User admin = userRepository.findByIdAndUserType(userId, UserType.ADMIN);
+//		List<UserDTOView> adminDTOList = new ArrayList<>();
+//
+//		if (admin == null) {
+//			throw new EntityNotFoundException("THIS USER IS NOT ADMIN OR DOES NOT EXIST");
+//		}
+//
+//		UserDTOView adminDTO = new UserDTOView(admin);
+//		adminDTOList.add(adminDTO);
+//		return adminDTOList;
+//	}
 
 	public UserDTOView createUser(UserDTOForm userDTOForm) {
-
 		User newUser = new User(userDTOForm);
-
-		if (userDTOForm.getUserType() != null) {
-			newUser.setUserType(userDTOForm.getUserType());
-		} else {
-			newUser.setUserType(UserType.USER);
-		}
-
 		return new UserDTOView(userRepository.save(newUser));
 	}
 

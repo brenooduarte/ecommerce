@@ -39,18 +39,11 @@ public class UserController {
         return ResponseEntity.ok(userDTOView);
     }
 
-    @GetMapping("/admins/{userId}")
-    public ResponseEntity<List<UserDTOView>> listAdmin(@PathVariable Long userId) {
-        List<UserDTOView> adminList = userService.listAdmin(userId);
-        return ResponseEntity.ok(adminList);
-    }
-
-    @GetMapping("/active")
-    public ResponseEntity<List<UserDTOView>> listAllActive() {
-//        return new ResponseEntity<List<UserDTOView>>(userService.listAllActive(), HttpStatus.OK);
-        //TODO resolver se irá existir um get all users e qual a intenção disso
-    	return null;
-    }
+//    @GetMapping("/admins/{userId}")
+//    public ResponseEntity<List<UserDTOView>> listAdmin(@PathVariable Long userId) {
+//        List<UserDTOView> adminList = userService.listAdmin(userId);
+//        return ResponseEntity.ok(adminList);
+//    }
 
     @PostMapping
     public ResponseEntity<UserDTOView> createUser(@Valid @RequestBody UserDTOInsertForm userDTO) {

@@ -1,8 +1,10 @@
 package com.ecommerce.domain.dto.view;
 
-import com.ecommerce.domain.enums.UserType;
+import com.ecommerce.domain.models.Role;
 import com.ecommerce.domain.models.User;
 import lombok.Data;
+
+import java.util.Set;
 
 @Data
 public class UserDTOView {
@@ -11,11 +13,11 @@ public class UserDTOView {
 
     private String email;
 
-    private UserType userType;
+    private Set<Role> roles;
 
     public UserDTOView(User user) {
         this.name = user.getName();
         this.email = user.getEmail();
-        this.userType = user.getUserType();
+        this.roles = user.getRoles();
     }
 }

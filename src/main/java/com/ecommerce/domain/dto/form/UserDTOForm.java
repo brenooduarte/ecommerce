@@ -1,10 +1,11 @@
 package com.ecommerce.domain.dto.form;
 
-import com.ecommerce.domain.enums.UserType;
+import com.ecommerce.domain.models.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+
+import java.util.Set;
 
 @Data
 public class UserDTOForm {
@@ -19,7 +20,7 @@ public class UserDTOForm {
 	@NotBlank
     private String password;
 
-	@NotNull
-	private UserType userType;
+	@NotBlank
+	private Set<Role> roles;
     
 }
