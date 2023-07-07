@@ -9,6 +9,7 @@ import com.ecommerce.utils.GlobalConstants;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
@@ -23,6 +24,9 @@ public class UserService {
 
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	public UserDTOView getById(long id) {
 	    Optional<User> userOptional = userRepository.findById(id);
@@ -65,6 +69,7 @@ public class UserService {
 
 	public UserDTOView createUser(UserDTOForm userDTOForm) {
 		User newUser = new User(userDTOForm);
+		newUser.setPassword(bCryptPasswordEncoder.encode(userDTOForm.getPassword()));
 		return new UserDTOView(userRepository.save(newUser));
 	}
 
