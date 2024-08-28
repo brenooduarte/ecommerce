@@ -5,7 +5,6 @@ import com.ecommerce.domain.dto.view.UserDTOView;
 import com.ecommerce.domain.exceptions.EntityInUseException;
 import com.ecommerce.domain.exceptions.UserAlreadyExistsException;
 import com.ecommerce.domain.models.User;
-import com.ecommerce.domain.repository.UserRepository;
 import com.ecommerce.domain.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,9 +20,6 @@ import java.util.List;
 @RequestMapping("/users")
 @Tag(name = "User", description = "Controller de User")
 public class UserController {
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private UserService userService;

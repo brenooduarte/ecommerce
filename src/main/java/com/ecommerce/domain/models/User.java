@@ -23,10 +23,6 @@ public class User {
     @Column
     private String password;
 
-    @OneToMany
-    @JoinColumn(name = "user_id")
-    private List<Assessment> assessments;
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserAddress> address;
 
@@ -34,7 +30,4 @@ public class User {
         this.address.add(userAddress);
     }
 
-    public void addAssessment(Assessment assessment) {
-        this.assessments.add(assessment);
-    }
 }

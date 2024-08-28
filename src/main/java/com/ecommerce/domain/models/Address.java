@@ -27,15 +27,10 @@ public class Address {
     @Column
     private String neighborhood;
 
-    @ManyToOne
-    @JoinColumn(name = "city_id")
-    private City city;
+    @Column(name = "city_name")
+    private String city;
 
-    public Address(City city) {
-        this.city = city;
-    }
-
-    public Address() {
-    }
+    @Column(name = "state_name")
+    private String state;
 
 }

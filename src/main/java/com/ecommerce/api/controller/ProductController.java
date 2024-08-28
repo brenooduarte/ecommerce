@@ -4,9 +4,7 @@ import com.ecommerce.domain.dto.form.ProductDTOForm;
 import com.ecommerce.domain.dto.view.ProductDTOView;
 import com.ecommerce.domain.exceptions.EntityInUseException;
 import com.ecommerce.domain.exceptions.ProductAlreadyExistsException;
-import com.ecommerce.domain.models.Assessment;
 import com.ecommerce.domain.models.Product;
-import com.ecommerce.domain.repository.ProductRepository;
 import com.ecommerce.domain.service.ProductService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
@@ -25,54 +23,35 @@ import java.util.Optional;
 public class ProductController {
 
     @Autowired
-    private ProductRepository productRepository;
-
-    @Autowired
     private ProductService productService;
 
-    @GetMapping
-    public ResponseEntity<List<Product>> list() {
-        return new ResponseEntity<List<Product>>(productRepository.findAll(), HttpStatus.OK);
-    }
-
     @GetMapping("/{productId}")
-    public ResponseEntity<Product> findById(@PathVariable Long productId) {
-        Optional<Product> product = productRepository.findById(productId);
-        return product.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-
+    public ResponseEntity<ProductDTOView> findById(@PathVariable Long productId) {
+        Optional<Product> product = productService.findByProductId(productId);
+        if (product.isPresent()) {
+            ProductDTOView productDTOView = new ProductDTOView();
+            BeanUtils.copyProperties(product.get(), productDTOView);
+            return new ResponseEntity<>(productDTOView, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
     
-    @GetMapping("/active")
-    public ResponseEntity<List<ProductDTOView>> listAllActive() {
-        return new ResponseEntity<List<ProductDTOView>>(productService.listAllActive(), HttpStatus.OK);
+    @GetMapping
+    public ResponseEntity<List<ProductDTOView>> findAllProducts(
+            @RequestParam Integer page,
+            @RequestParam Integer size
+    ) {
+        return new ResponseEntity<>(productService.findAllProducts(page, size), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<?> addProduct(@RequestBody ProductDTOForm productDTOForm) {
+    public ResponseEntity<?> createProduct(@RequestBody ProductDTOForm productDTOForm) {
         try {
-            Product product = new Product();
-            BeanUtils.copyProperties(productDTOForm, product, "category_id");
-
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(productService.createProduct(product, productDTOForm.getCategoryId()));
+                    .body(productService.createProduct(productDTOForm));
 
         } catch (ProductAlreadyExistsException e) {
-            return ResponseEntity.badRequest()
-                    .body(e.getMessage());
-        }
-    }
-
-    @PostMapping("{productId}/comments/user/{userId}")
-    public ResponseEntity<?> addAssessment(
-            @RequestBody Assessment assessment,
-            @PathVariable Long productId,
-            @PathVariable Long userId) {
-
-        try {
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(productService.addAssessment(assessment, productId, userId));
-
-        } catch (EntityNotFoundException e) {
             return ResponseEntity.badRequest()
                     .body(e.getMessage());
         }
@@ -104,26 +83,15 @@ public class ProductController {
     }
 
     @PutMapping("/{productId}")
-    public ResponseEntity<?> update(
+    public ResponseEntity<ProductDTOView> updateProduct(
             @PathVariable Long productId,
-            @RequestBody Product product) {
+            @RequestBody ProductDTOForm productDTOForm
+    ) {
+        ProductDTOView productDTOView = new ProductDTOView();
+        Product productUpdated = productService.updateProduct(productId, productDTOForm);
+        BeanUtils.copyProperties(productUpdated, productDTOView);
 
-        try {
-            Optional<Product> currentProduct = productRepository.findById(productId);
-
-            if (currentProduct.isPresent()) {
-                BeanUtils.copyProperties(product, currentProduct, "id");
-
-                productRepository.save(currentProduct.get());
-                return ResponseEntity.ok(currentProduct.get());
-            }
-
-            return ResponseEntity.notFound().build();
-
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.badRequest()
-                    .body(e.getMessage());
-        }
+        return new ResponseEntity<>(productDTOView, HttpStatus.OK);
     }
 
     @DeleteMapping("/{productId}")
