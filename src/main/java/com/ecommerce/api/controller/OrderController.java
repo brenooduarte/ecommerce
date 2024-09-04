@@ -31,7 +31,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<?> add(@RequestBody OrderDTOForm orderDTOForm) {
+    public ResponseEntity<?> createOrder(@RequestBody OrderDTOForm orderDTOForm) {
         try {
             orderService.createOrder(orderDTOForm);
 

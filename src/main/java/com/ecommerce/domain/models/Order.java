@@ -56,4 +56,6 @@ public class Order {
         this.creationDate = new Date();
         this.statusOrder = StatusOrder.CREATED;
     }
+
+    public Order() {}
 }

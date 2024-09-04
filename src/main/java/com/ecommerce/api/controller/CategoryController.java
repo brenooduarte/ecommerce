@@ -14,7 +14,7 @@ import java.util.List;
 public class CategoryController {
 
     @Autowired
-    private CategoryService categoryService;
+    CategoryService categoryService;
 
     @GetMapping("/{categoryId}")
     public ResponseEntity<List<Product>> listAllProductsByCategory(@PathVariable Long categoryId) {

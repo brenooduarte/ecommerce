@@ -6,7 +6,13 @@ import com.ecommerce.domain.models.*;
 import com.ecommerce.domain.repository.AddressRepository;
 import com.ecommerce.domain.repository.OrderRepository;
 import com.ecommerce.domain.repository.ProductOrderRepository;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,37 +28,75 @@ import java.util.Optional;
 public class OrderService {
 
 	@Autowired
-	private OrderRepository orderRepository;
+	OrderRepository orderRepository;
 
 	@Autowired
-	private ProductOrderRepository productOrderRepository;
+	ProductOrderRepository productOrderRepository;
 
 	@Autowired
-	private AddressRepository addressRepository;
+	AddressRepository addressRepository;
 
+//	public void createOrder(OrderDTOForm orderDTOForm) {
+//
+//		BigDecimal subtotal = BigDecimal.ZERO;
+//
+//		// TODO: Calculate freight charge
+//		BigDecimal freightCharge = BigDecimal.ZERO;
+//
+//		for (Product product : orderDTOForm.getProducts()) {
+//			subtotal = subtotal.add(product.getPrice());
+//		}
+//
+//		Order order = new Order(subtotal, freightCharge, subtotal.add(freightCharge));
+//		BeanUtils.copyProperties(orderDTOForm, order, "delivery_address_id");
+//
+//		Address deliveryAddress = addressRepository.findById(orderDTOForm.getDeliveryAddressId())
+//				.orElseThrow(() -> new EntityNotFoundException("Address not exists"));
+//
+//		order.setDeliveryAddress(deliveryAddress);
+//		orderRepository.save(order);
+//
+//		for (Product product : orderDTOForm.getProducts()) {
+//			productOrderRepository.save(new ProductOrder(order, product));
+//		}
+//
+//	}
+
+	@PersistenceContext
+	private EntityManager entityManager;
+
+	@Transactional
 	public void createOrder(OrderDTOForm orderDTOForm) {
 
 		BigDecimal subtotal = BigDecimal.ZERO;
+		BigDecimal freightCharge = BigDecimal.ZERO;
 
-		// TODO: Calculate freight charge
-		BigDecimal freightCharge = BigDecimal.valueOf(100);
-
+		// Calculate subtotal
 		for (Product product : orderDTOForm.getProducts()) {
 			subtotal = subtotal.add(product.getPrice());
 		}
+
+		// Create a new order
 		Order order = new Order(subtotal, freightCharge, subtotal.add(freightCharge));
-		BeanUtils.copyProperties(orderDTOForm, order, "delivery_address_id");
+		BeanUtils.copyProperties(orderDTOForm, order, "deliveryAddressId");
 
-		Address deliveryAddress = addressRepository.findById(orderDTOForm.getDeliveryAddressId())
-				.orElseThrow(() -> new EntityNotFoundException("Address not exists"));
+		// Fetch delivery address using Criteria API
+		CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Address> criteriaQuery = criteriaBuilder.createQuery(Address.class);
+		Root<Address> root = criteriaQuery.from(Address.class);
+		criteriaQuery.select(root).where(criteriaBuilder.equal(root.get("id"), orderDTOForm.getDeliveryAddressId()));
 
+		Address deliveryAddress = entityManager.createQuery(criteriaQuery).getSingleResult();
 		order.setDeliveryAddress(deliveryAddress);
-		orderRepository.save(order);
 
+		// Save the order
+		entityManager.persist(order);
+
+		// Save products associated with the order
 		for (Product product : orderDTOForm.getProducts()) {
-			productOrderRepository.save(new ProductOrder(order, product));
+			ProductOrder productOrder = new ProductOrder(order, product);
+			entityManager.persist(productOrder);
 		}
-
 	}
 
 	public ResponseEntity<Order> findById(Long orderId, Long userId) {
@@ -85,22 +129,23 @@ public class OrderService {
 			return ResponseEntity.notFound().build();
 		}
 
-		switch (status) {
-			case "CONFIRMED":
-				order.setStatusOrder(StatusOrder.valueOf("CONFIRMED"));
-				order.setConfirmationDate(new Date());
-				break;
-			case "DELIVERED":
-				order.setStatusOrder(StatusOrder.valueOf("DELIVERED"));
-				order.setDeliveryDate(new Date());
-				break;
-			case "CANCELED":
-				order.setStatusOrder(StatusOrder.valueOf("CANCELED"));
-				order.setCancellationDate(new Date());
-				break;
-			default:
-				return ResponseEntity.badRequest().build();
-		}
+        switch (status) {
+            case "CONFIRMED" -> {
+                order.setStatusOrder(StatusOrder.valueOf("CONFIRMED"));
+                order.setConfirmationDate(new Date());
+            }
+            case "DELIVERED" -> {
+                order.setStatusOrder(StatusOrder.valueOf("DELIVERED"));
+                order.setDeliveryDate(new Date());
+            }
+            case "CANCELED" -> {
+                order.setStatusOrder(StatusOrder.valueOf("CANCELED"));
+                order.setCancellationDate(new Date());
+            }
+            default -> {
+                return ResponseEntity.badRequest().build();
+            }
+        }
 
 		orderRepository.save(order);
 		return ResponseEntity.ok(order);

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class AddressController {
 
     @Autowired
-    private AddressService addressService;
+    AddressService addressService;
 
     @PostMapping("/user/{userId}")
     public ResponseEntity<?> add(@RequestBody AddressDTOForm addressDTOForm, @PathVariable Long userId) {

@@ -23,7 +23,7 @@ import java.util.Optional;
 public class ProductController {
 
     @Autowired
-    private ProductService productService;
+    ProductService productService;
 
     @GetMapping("/{productId}")
     public ResponseEntity<ProductDTOView> findById(@PathVariable Long productId) {
