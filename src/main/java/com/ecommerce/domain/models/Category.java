@@ -24,6 +24,10 @@ public class Category {
     @JoinColumn(name = "category_id")
     private List<Product> products;
 
+    @ManyToOne
+    @JoinColumn(name = "store_id", nullable = false)
+    private Store store;
+
     public Category(String image, String name) {
         this.image = image;
         this.name = name;

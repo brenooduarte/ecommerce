@@ -28,12 +28,12 @@ public class ProductService {
 	@Autowired
 	private CategoryRepository categoryRepository;
 
-	public Optional<Product> findByProductId(Long productId) {
-		return productRepository.findByProductId(productId);
+	public Optional<Product> findByProductId(Long productId, Long storeId) {
+		return productRepository.findByProductId(productId, storeId);
 	}
 
-	public List<ProductDTOView> findAllProducts(Integer page, Integer size) {
-		List<Product> data = productRepository.findAllProducts(page, size);
+	public List<ProductDTOView> findAllProducts(Integer page, Integer size, Long storeId) {
+		List<Product> data = productRepository.findAllProducts(page, size, storeId);
 		List<ProductDTOView> listView = new ArrayList<>();
 		for (Product product : data) {
 			ProductDTOView productView = new ProductDTOView();
@@ -63,7 +63,7 @@ public class ProductService {
 	}
 
 	public Product updateProduct(Long productId, ProductDTOForm productDTOForm) {
-		Optional<Product> productFound = productRepository.findByProductId(productId);
+		Optional<Product> productFound = productRepository.findByProductId(productId, productDTOForm.getStoreId());
 
 		if (productFound.isPresent()) {
 			BeanUtils.copyProperties(productDTOForm, productFound.get());
@@ -77,23 +77,23 @@ public class ProductService {
 		productRepository.deleteById(id);
 	}
 
-	public void setActivePromotion(Long productId) {
-		Product product = productRepository.findByProductId(productId).get();
+	public void setActivePromotion(Long productId, Long storeId) {
+		Product product = productRepository.findByProductId(productId, storeId).get();
 
 		product.setPromotion(!product.isPromotion());
 	}
 
-	public void setActiveProduct(Long productId) {
-		Product product = productRepository.findByProductId(productId).get();
+	public void setActiveProduct(Long productId, Long storeId) {
+		Product product = productRepository.findByProductId(productId, storeId).get();
 
 		product.setPromotion(!product.isStatus());
 	}
 
-	public void setCategoryInProduct(Long productId, Long categoryId) {
+	public void setCategoryInProduct(Long productId, Long categoryId, Long storeId) {
 		Category category = categoryRepository.findById(categoryId)
 				.orElseThrow(() -> new NoSuchElementException("Category not found"));
 
-		Product product = productRepository.findByProductId(productId).get();
+		Product product = productRepository.findByProductId(productId, storeId).get();
 
 		category.addProduct(product);
 	}

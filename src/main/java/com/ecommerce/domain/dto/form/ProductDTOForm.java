@@ -1,6 +1,7 @@
 package com.ecommerce.domain.dto.form;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -26,5 +27,9 @@ public class ProductDTOForm {
 
     @JsonProperty("category_id")
     private Long categoryId;
+
+    @NotNull
+    @JsonProperty("store_id")
+    private Long storeId;
 
 }

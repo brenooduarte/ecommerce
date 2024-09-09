@@ -7,8 +7,8 @@ import java.util.Optional;
 
 public interface ProductRepositoryQueries{
 	
-	 List<Product> findAllProducts(Integer page, Integer size);
+	 List<Product> findAllProducts(Integer page, Integer size, Long storeId);
 
-     Optional<Product> findByProductId(Long productId);
+     Optional<Product> findByProductId(Long productId, Long storeId);
 
 }

@@ -39,6 +39,10 @@ public class Product {
     @Column
     private boolean status;
 
+    @ManyToOne
+    @JoinColumn(name = "store_id", nullable = false)
+    private Store store;
+
     @PrePersist
     public void prePersist() {
     	setStatus(GlobalConstants.ACTIVE);

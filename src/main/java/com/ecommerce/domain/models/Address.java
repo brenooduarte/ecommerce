@@ -33,4 +33,8 @@ public class Address {
     @Column(name = "state_name")
     private String state;
 
+    @ManyToOne
+    @JoinColumn(name = "store_id", nullable = false)
+    private Store store;
+
 }

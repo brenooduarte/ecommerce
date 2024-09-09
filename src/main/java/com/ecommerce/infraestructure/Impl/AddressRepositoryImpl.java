@@ -20,18 +20,20 @@ public class AddressRepositoryImpl implements AddressRepositoryQueries {
     @Override
     public List<Address> findAll(Long userId) {
 
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Address> criteriaQuery = criteriaBuilder.createQuery(Address.class);
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Address> cq = cb.createQuery(Address.class);
 
-        Root<Address> addressRoot = criteriaQuery.from(Address.class);
-        Root<UserAddress> userAddressRoot = criteriaQuery.from(UserAddress.class);
+        Root<Address> addressRoot = cq.from(Address.class);
+        Root<UserAddress> userAddressRoot = cq.from(UserAddress.class);
 
-        criteriaQuery.select(addressRoot);
+        cq.select(addressRoot);
 
-        criteriaQuery.where(criteriaBuilder.equal(addressRoot.get("id"), userAddressRoot.get("address").get("id")),
-                criteriaBuilder.equal(userAddressRoot.get("user").get("id"), userId));
+        cq.where(
+                cb.equal(addressRoot.get("id"), userAddressRoot.get("address").get("id")),
+                cb.equal(userAddressRoot.get("user").get("id"), userId)
+        );
 
-        TypedQuery<Address> query = entityManager.createQuery(criteriaQuery);
+        TypedQuery<Address> query = entityManager.createQuery(cq);
 
         List<Address> addresses = query.getResultList();
 

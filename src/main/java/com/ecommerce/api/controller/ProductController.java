@@ -26,8 +26,8 @@ public class ProductController {
     ProductService productService;
 
     @GetMapping("/{productId}")
-    public ResponseEntity<ProductDTOView> findById(@PathVariable Long productId) {
-        Optional<Product> product = productService.findByProductId(productId);
+    public ResponseEntity<ProductDTOView> findById(@PathVariable Long productId, Long storeId) {
+        Optional<Product> product = productService.findByProductId(productId, storeId);
         if (product.isPresent()) {
             ProductDTOView productDTOView = new ProductDTOView();
             BeanUtils.copyProperties(product.get(), productDTOView);
@@ -40,9 +40,10 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<List<ProductDTOView>> findAllProducts(
             @RequestParam Integer page,
-            @RequestParam Integer size
+            @RequestParam Integer size,
+            @RequestParam Long storeId
     ) {
-        return new ResponseEntity<>(productService.findAllProducts(page, size), HttpStatus.OK);
+        return new ResponseEntity<>(productService.findAllProducts(page, size, storeId), HttpStatus.OK);
     }
 
     @PostMapping
@@ -57,13 +58,14 @@ public class ProductController {
         }
     }
 
-    @PatchMapping("/{productId}/category/{categoryId}")
+    @PatchMapping("/{productId}/category/{categoryId}/stores/{storeId}")
     public ResponseEntity<?> setCategoryInProduct(
             @PathVariable Long productId,
-            @PathVariable Long categoryId) {
-
+            @PathVariable Long categoryId,
+            @PathVariable Long storeId
+    ) {
         try {
-            productService.setCategoryInProduct(productId, categoryId);
+            productService.setCategoryInProduct(productId, categoryId, storeId);
             return ResponseEntity.ok().build();
 
         } catch (EntityNotFoundException e) {
@@ -72,14 +74,20 @@ public class ProductController {
         }
     }
 
-    @PatchMapping("/{productId}/active-promotion")
-    public void setActivePromotion(@PathVariable Long productId) {
-        productService.setActivePromotion(productId);
+    @PatchMapping("/{productId}/active-promotion/stores/{storeId}")
+    public void setActivePromotion(
+            @PathVariable Long productId,
+            @PathVariable Long storeId
+    ) {
+        productService.setActivePromotion(productId, storeId);
     }
 
-    @PatchMapping("/{productId}/active-product")
-    public void setActiveProduct(@PathVariable Long productId) {
-        productService.setActiveProduct(productId);
+    @PatchMapping("/{productId}/active-product/stores/{storeId}")
+    public void setActiveProduct(
+            @PathVariable Long productId,
+            @PathVariable Long storeId
+    ) {
+        productService.setActiveProduct(productId, storeId);
     }
 
     @PutMapping("/{productId}")

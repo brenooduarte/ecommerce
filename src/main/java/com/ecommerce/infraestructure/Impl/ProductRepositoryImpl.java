@@ -22,14 +22,17 @@ public class ProductRepositoryImpl implements ProductRepositoryQueries {
 	EntityManager entityManager;
 	
 	@Override
-	public List<Product> findAllProducts(Integer page, Integer size) {
+	public List<Product> findAllProducts(Integer page, Integer size, Long storeId) {
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Product> cq = cb.createQuery(Product.class);
 
 		Root<Product> productRoot = cq.from(Product.class);
 
 		cq.select(productRoot);
-		cq.where(cb.equal(productRoot.get("status"), GlobalConstants.ACTIVE));
+		cq.where(
+				cb.equal(productRoot.get("status"), GlobalConstants.ACTIVE),
+				cb.equal(productRoot.get("store_id"), storeId)
+		);
 
 		int firstResult = page * size;
 
@@ -40,7 +43,7 @@ public class ProductRepositoryImpl implements ProductRepositoryQueries {
 	}
 
 	@Override
-	public Optional<Product> findByProductId(Long productId) {
+	public Optional<Product> findByProductId(Long productId, Long storeId) {
 		try {
 			CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 			CriteriaQuery<Product> cq = cb.createQuery(Product.class);
@@ -50,7 +53,8 @@ public class ProductRepositoryImpl implements ProductRepositoryQueries {
 			cq.select(productRoot);
 			cq.where(
 					cb.equal(productRoot.get("id"), productId),
-					cb.equal(productRoot.get("status"), GlobalConstants.ACTIVE)
+					cb.equal(productRoot.get("status"), GlobalConstants.ACTIVE),
+					cb.equal(productRoot.get("store_id"), storeId)
 			);
 
 			var product = entityManager.createQuery(cq)
