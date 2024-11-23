@@ -2,6 +2,7 @@ package com.ecommerce.domain.service;
 
 import com.ecommerce.domain.dto.form.ProductDTOForm;
 import com.ecommerce.domain.dto.view.ProductDTOView;
+import com.ecommerce.domain.dto.view.SearchedProductsDTOView;
 import com.ecommerce.domain.exceptions.ProductAlreadyExistsException;
 import com.ecommerce.domain.models.Category;
 import com.ecommerce.domain.models.Product;
@@ -14,10 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -41,6 +40,32 @@ public class ProductService {
 			listView.add(productView);
 		}
 		return listView;
+	}
+
+	public SearchedProductsDTOView findAllProductsWithFilters(
+			Integer page,
+			Integer size,
+			Long storeId,
+			String productName,
+			String brand,
+			String priceMin,
+			String priceMax
+	) {
+		SearchedProductsDTOView searchedProducts = (SearchedProductsDTOView) productRepository.findAllProductsWithFilters(
+				page, size, storeId, productName, brand, priceMin, priceMax
+		);
+
+		// Map entities to DTOs if necessary
+		Set<ProductDTOView> productDTOViews = searchedProducts.getProductDTOViews().stream()
+				.map(product -> {
+					ProductDTOView productView = new ProductDTOView();
+					BeanUtils.copyProperties(product, productView);
+					return productView;
+				})
+				.collect(Collectors.toSet());
+
+		searchedProducts.setProductDTOViews(productDTOViews);
+		return searchedProducts;
 	}
 
 	public Product createProduct(ProductDTOForm productDTOForm) throws ProductAlreadyExistsException {

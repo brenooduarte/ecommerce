@@ -2,6 +2,7 @@ package com.ecommerce.api.controller;
 
 import com.ecommerce.domain.dto.form.ProductDTOForm;
 import com.ecommerce.domain.dto.view.ProductDTOView;
+import com.ecommerce.domain.dto.view.SearchedProductsDTOView;
 import com.ecommerce.domain.exceptions.EntityInUseException;
 import com.ecommerce.domain.exceptions.ProductAlreadyExistsException;
 import com.ecommerce.domain.models.Product;
@@ -25,8 +26,8 @@ public class ProductController {
     @Autowired
     ProductService productService;
 
-    @GetMapping("/{productId}")
-    public ResponseEntity<ProductDTOView> findById(@PathVariable Long productId, Long storeId) {
+    @GetMapping("/{productId}/{storeId}")
+    public ResponseEntity<ProductDTOView> findById(@PathVariable Long productId, @PathVariable Long storeId) {
         Optional<Product> product = productService.findByProductId(productId, storeId);
         if (product.isPresent()) {
             ProductDTOView productDTOView = new ProductDTOView();
@@ -43,7 +44,33 @@ public class ProductController {
             @RequestParam Integer size,
             @RequestParam Long storeId
     ) {
+        page = page != null ? page : 0;
+        size = size != null ? size : 10;
+
         return new ResponseEntity<>(productService.findAllProducts(page, size, storeId), HttpStatus.OK);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<SearchedProductsDTOView> findAllProductsWithFilters(
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer size,
+            @RequestParam(required = false) Long storeId,
+            @RequestParam(required = false) String productName,
+            @RequestParam(required = false) String brand,
+            @RequestParam(required = false) String priceMin,
+            @RequestParam(required = false) String priceMax
+    ) {
+        SearchedProductsDTOView products = productService.findAllProductsWithFilters(
+                page,
+                size,
+                storeId,
+                productName,
+                brand,
+                priceMin,
+                priceMax
+        );
+
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     @PostMapping

@@ -19,6 +19,9 @@ public class Product {
     private String name;
 
     @Column(nullable = false)
+    private String brand;
+
+    @Column(nullable = false)
     private BigDecimal price;
 
     @Column(nullable = false)
@@ -42,6 +45,9 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
+
+    @Column(length = 70)
+    private String related;
 
     @PrePersist
     public void prePersist() {

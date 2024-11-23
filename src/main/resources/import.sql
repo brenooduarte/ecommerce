@@ -1,50 +1,54 @@
-INSERT INTO tb_user (name, email, password)
-VALUES
-('João Silva', 'joao.silva@example.com', 'senha123'),
-('Maria Oliveira', 'maria.oliveira@example.com', 'senha456');
+-- Inserção para tb_store
+INSERT INTO tb_store (id, "domain", "name") VALUES
+(1, 'store1.com', 'Store One');
 
-INSERT INTO tb_address (cep, street, number, additional, neighborhood, city_name, state_name)
-VALUES
-('12345-678', 'Rua das Flores', '123', 'Apto 45', 'Jardim das Palmeiras', 'São Paulo', 'SP'),
-('98765-432', 'Av. Paulista', '1000', 'Sala 100', 'Centro', 'São Paulo', 'SP');
+-- Inserções para tb_user
+INSERT INTO tb_user (id, email, "name", "password", store_id) VALUES
+(1, 'breno@gmail.com', 'Breno', 'password1', 1),
+(2, 'harlon@gmail.com', 'Harlon', 'password2', 1),
+(3, 'pedro@gmail.com', 'Pedro', 'password3', 1);
 
-INSERT INTO tb_user_address (user_id, address_id, address_type)
-VALUES
-(1, 1, 1),  -- João Silva, Endereço Rua das Flores, Tipo de Endereço 1
-(2, 2, 1);  -- Maria Oliveira, Endereço Av. Paulista, Tipo de Endereço 1
+-- Inserções para tb_address
+INSERT INTO tb_address (id, additional, cep, city_name, neighborhood, "number", state_name, street, store_id) VALUES
+(1, 'Apartment 1', '12345-678', 'City One', 'Neighborhood A', '100', 'State A', 'Street One', 1),
+(2, 'Apartment 2', '23456-789', 'City One', 'Neighborhood B', '200', 'State A', 'Street Two', 1),
+(3, 'House', '34567-890', 'City One', 'Neighborhood C', '300', 'State A', 'Street Three', 1);
 
-INSERT INTO tb_category (image, "name")
-VALUES
-('electronics.jpg', 'Electronics'),
-('home_appliances.jpg', 'Home Appliances'),
-('gaming.jpg', 'Gaming'),
-('furniture.jpg', 'Furniture');
+-- Inserções para tb_category
+INSERT INTO tb_category (id, image, "name", store_id) VALUES
+(1, 'image1.jpg', 'Category One', 1),
+(2, 'image2.jpg', 'Category Two', 1),
+(3, 'image3.jpg', 'Category Three', 1);
 
-INSERT INTO tb_product (description, highlight, image, "name", price, promotion, promotion_price, status, category_id)
-VALUES
-('Smartphone with high resolution display', TRUE, 'smartphone1.jpg', 'Smartphone X', 799.99, TRUE, 699.99, TRUE, 1),
-('Wireless Noise Cancelling Headphones', FALSE, 'headphones1.jpg', 'Headphones Y', 199.99, FALSE, NULL, TRUE, 2),
-('4K Ultra HD Smart TV', TRUE, 'tv1.jpg', 'Smart TV Z', 1199.99, TRUE, 999.99, TRUE, 3),
-('Gaming Laptop with High Performance GPU', TRUE, 'laptop1.jpg', 'Gaming Laptop W', 1499.99, FALSE, NULL, TRUE, 4),
-('Bluetooth Speaker with Deep Bass', FALSE, 'speaker1.jpg', 'Bluetooth Speaker V', 129.99, FALSE, NULL, TRUE, 5),
-('Smartwatch with Fitness Tracking', TRUE, 'smartwatch1.jpg', 'Smartwatch U', 299.99, TRUE, 249.99, TRUE, 6),
-('Portable Power Bank 10000mAh', FALSE, 'powerbank1.jpg', 'Power Bank T', 49.99, FALSE, NULL, TRUE, 7),
-('Wireless Charging Pad', FALSE, 'chargingpad1.jpg', 'Charging Pad S', 39.99, TRUE, 29.99, TRUE, 8),
-('Smart Home Hub with Voice Assistant', TRUE, 'smarthub1.jpg', 'Smart Home Hub R', 89.99, FALSE, NULL, TRUE, 9),
-('Ergonomic Office Chair', FALSE, 'chair1.jpg', 'Office Chair Q', 159.99, TRUE, 139.99, TRUE, 10),
-('4TB External Hard Drive', FALSE, 'harddrive1.jpg', 'External Hard Drive P', 109.99, TRUE, 89.99, TRUE, 11),
-('Wireless Ergonomic Mouse', FALSE, 'mouse1.jpg', 'Ergonomic Mouse O', 49.99, FALSE, NULL, TRUE, 12),
-('Mechanical Gaming Keyboard', TRUE, 'keyboard1.jpg', 'Gaming Keyboard N', 129.99, FALSE, NULL, TRUE, 13),
-('27-inch 144Hz Gaming Monitor', TRUE, 'monitor1.jpg', 'Gaming Monitor M', 349.99, TRUE, 299.99, TRUE, 14),
-('Noise Cancelling In-Ear Headphones', FALSE, 'earphones1.jpg', 'In-Ear Headphones L', 99.99, FALSE, NULL, TRUE, 15);
+-- Inserções para tb_order
+INSERT INTO tb_order (id, cancellation_date, confirmation_date, creation_date, delivery_date, freight_charge, status_order, subtotal, total_amount, customer_id, delivery_address, store_id) VALUES
+(1, NULL, '2023-09-10 10:30:00', '2023-09-10 10:00:00', '2023-09-15 12:00:00', 10.00, 'Confirmed', 100.00, 110.00, 1, 1, 1),
+(2, '2023-09-11 09:00:00', NULL, '2023-09-11 08:00:00', NULL, 15.00, 'Cancelled', 200.00, 215.00, 2, 2, 1),
+(3, NULL, '2023-09-12 14:00:00', '2023-09-12 13:00:00', '2023-09-17 18:00:00', 20.00, 'Confirmed', 300.00, 320.00, 3, 3, 1);
 
-INSERT INTO tb_order (subtotal, freight_charge, total_amount, creation_date, confirmation_date, cancellation_date, delivery_date, delivery_address, customer_id, status_order)
-VALUES
-(150.00, 10.00, 160.00, NOW(), NULL, NULL, DATE_ADD(NOW(), INTERVAL 3 DAY), 1, 1, 'CREATED'),
-(200.00, 15.00, 215.00, NOW(), NOW(), NULL, DATE_ADD(NOW(), INTERVAL 5 DAY), 2, 2, 'CONFIRMED');
+-- Inserções para tb_product
+INSERT INTO tb_product (id, description, highlight, image_url, "name", price, promotion, promotion_price, status, store_id, category_id, brand) VALUES
+(1, 'Broca diamantada para procedimentos de precisão', true, 'broca_diamantada.jpg', 'Broca Diamantada', 15.00, false, NULL, true, 1, 1, 'Diamante Dental'),
+(2, 'Espelho clínico para melhor visualização intraoral', false, 'espelho_clinico.jpg', 'Espelho Clínico', 20.00, true, 18.00, true, 1, 1, 'ClinicoPro'),
+(3, 'Kit de curetas periodontais para raspagem de tártaro', true, 'cureta_periodontal.jpg', 'Curetas Periodontais', 75.00, false, NULL, true, 1, 1, 'Higiene Dental'),
+(4, 'Sugador cirúrgico descartável', false, 'sugador_cirurgico.jpg', 'Sugador Cirúrgico', 10.00, true, 9.00, true, 1, 2, 'SurgicalTools'),
+(5, 'Espátula para manipulação de resinas e materiais', true, 'espatula.jpg', 'Espátula Odontológica', 12.00, false, NULL, true, 1, 2, 'ResinCare'),
+(6, 'Alavanca para extração dentária', false, 'alavanca_extracao.jpg', 'Alavanca de Extração', 50.00, true, 45.00, true, 1, 3, 'Extractions Inc.'),
+(7, 'Pinça para sutura e manipulação de materiais', true, 'pinca_sutura.jpg', 'Pinça de Sutura', 22.00, false, NULL, true, 1, 3, 'SutureMaster'),
+(8, 'Agulha carpule para anestesia local', false, 'agulha_carpule.jpg', 'Agulha Carpule', 5.00, true, 4.50, true, 1, 1, 'Anesthesia Plus'),
+(9, 'Composto resinoso fotopolimerizável', true, 'resina_composta.jpg', 'Resina Composta', 80.00, false, NULL, true, 1, 1, 'ResinTech'),
+(10, 'Fio dental para profilaxia', false, 'fio_dental.jpg', 'Fio Dental', 8.00, true, 7.50, true, 1, 2, 'ProCare'),
+(11, 'Escova interdental para limpeza de espaços', true, 'escova_interdental.jpg', 'Escova Interdental', 10.00, false, NULL, true, 1, 2, 'CleanBrush'),
+(12, 'Kit de bandejas de aço inoxidável para instrumentação', true, 'bandeja_inox.jpg', 'Bandeja Inox', 25.00, false, NULL, true, 1, 3, 'Instrument Pro');
 
-INSERT INTO tb_product_order (product_id, order_id, price_on_purchase, promotion_price)
-VALUES
-(1, 1, 100.00, 90.00),
-(2, 1, 50.00, NULL),
-(3, 2, 200.00, 180.00);
+-- Inserções para tb_product_order
+INSERT INTO tb_product_order (id, price_on_purchase, promotion_price, order_id, product_id) VALUES
+(1, 50.00, NULL, 1, 1),
+(2, 70.00, 65.00, 2, 2),
+(3, 100.00, NULL, 3, 3);
+
+-- Inserções para tb_user_address
+INSERT INTO tb_user_address (id, address_type, address_id, user_id) VALUES
+(1, 1, 1, 1),
+(2, 2, 2, 2),
+(3, 3, 3, 3);

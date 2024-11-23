@@ -11,6 +11,8 @@ public class ProductDTOForm {
 
     private String name;
 
+    private String brand;
+
     private String description;
 
     @JsonProperty("image_url")
@@ -21,6 +23,8 @@ public class ProductDTOForm {
     private boolean promotion;
 
     private BigDecimal price;
+
+    private String related;
 
     @JsonProperty("price_promotion")
     private BigDecimal pricePromotion;
