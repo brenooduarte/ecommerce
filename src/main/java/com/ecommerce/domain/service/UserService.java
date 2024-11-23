@@ -1,19 +1,17 @@
 package com.ecommerce.domain.service;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.webjars.NotFoundException;
-
 import com.ecommerce.domain.dto.form.UserDTOForm;
 import com.ecommerce.domain.dto.view.UserDTOView;
 import com.ecommerce.domain.exceptions.UserAlreadyExistsException;
 import com.ecommerce.domain.models.User;
 import com.ecommerce.domain.repository.UserRepository;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -29,7 +27,7 @@ public class UserService {
 	        User user = userOptional.get();
 	        BeanUtils.copyProperties(user, userDTOView);
 	    } else {
-	        throw new NotFoundException("USER NOT FOUND");
+	        throw new IllegalArgumentException("USER NOT FOUND");
 	    }
 
 	    return userDTOView;

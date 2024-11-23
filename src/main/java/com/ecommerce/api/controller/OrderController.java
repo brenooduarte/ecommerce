@@ -2,7 +2,6 @@ package com.ecommerce.api.controller;
 
 import com.ecommerce.domain.dto.form.OrderDTOForm;
 import com.ecommerce.domain.models.Order;
-import com.ecommerce.domain.repository.OrderRepository;
 import com.ecommerce.domain.service.OrderService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
@@ -19,9 +18,6 @@ import java.util.List;
 public class OrderController {
 
     @Autowired
-    private OrderRepository orderRepository;
-
-    @Autowired
     private OrderService orderService;
 
     @GetMapping("/user/{userId}")
@@ -35,7 +31,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<?> add(@RequestBody OrderDTOForm orderDTOForm) {
+    public ResponseEntity<?> createOrder(@RequestBody OrderDTOForm orderDTOForm) {
         try {
             orderService.createOrder(orderDTOForm);
 

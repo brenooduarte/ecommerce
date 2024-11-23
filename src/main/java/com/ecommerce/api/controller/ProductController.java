@@ -2,11 +2,10 @@ package com.ecommerce.api.controller;
 
 import com.ecommerce.domain.dto.form.ProductDTOForm;
 import com.ecommerce.domain.dto.view.ProductDTOView;
+import com.ecommerce.domain.dto.view.SearchedProductsDTOView;
 import com.ecommerce.domain.exceptions.EntityInUseException;
 import com.ecommerce.domain.exceptions.ProductAlreadyExistsException;
-import com.ecommerce.domain.models.Assessment;
 import com.ecommerce.domain.models.Product;
-import com.ecommerce.domain.repository.ProductRepository;
 import com.ecommerce.domain.service.ProductService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
@@ -25,36 +24,60 @@ import java.util.Optional;
 public class ProductController {
 
     @Autowired
-    private ProductRepository productRepository;
+    ProductService productService;
 
-    @Autowired
-    private ProductService productService;
-
-    @GetMapping
-    public ResponseEntity<List<Product>> list() {
-        return new ResponseEntity<List<Product>>(productRepository.findAll(), HttpStatus.OK);
-    }
-
-    @GetMapping("/{productId}")
-    public ResponseEntity<Product> findById(@PathVariable Long productId) {
-        Optional<Product> product = productRepository.findById(productId);
-        return product.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-
+    @GetMapping("/{productId}/{storeId}")
+    public ResponseEntity<ProductDTOView> findById(@PathVariable Long productId, @PathVariable Long storeId) {
+        Optional<Product> product = productService.findByProductId(productId, storeId);
+        if (product.isPresent()) {
+            ProductDTOView productDTOView = new ProductDTOView();
+            BeanUtils.copyProperties(product.get(), productDTOView);
+            return new ResponseEntity<>(productDTOView, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
     
-    @GetMapping("/active")
-    public ResponseEntity<List<ProductDTOView>> listAllActive() {
-        return new ResponseEntity<List<ProductDTOView>>(productService.listAllActive(), HttpStatus.OK);
+    @GetMapping
+    public ResponseEntity<List<ProductDTOView>> findAllProducts(
+            @RequestParam Integer page,
+            @RequestParam Integer size,
+            @RequestParam Long storeId
+    ) {
+        page = page != null ? page : 0;
+        size = size != null ? size : 10;
+
+        return new ResponseEntity<>(productService.findAllProducts(page, size, storeId), HttpStatus.OK);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<SearchedProductsDTOView> findAllProductsWithFilters(
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer size,
+            @RequestParam(required = false) Long storeId,
+            @RequestParam(required = false) String productName,
+            @RequestParam(required = false) String brand,
+            @RequestParam(required = false) String priceMin,
+            @RequestParam(required = false) String priceMax
+    ) {
+        SearchedProductsDTOView products = productService.findAllProductsWithFilters(
+                page,
+                size,
+                storeId,
+                productName,
+                brand,
+                priceMin,
+                priceMax
+        );
+
+        return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<?> addProduct(@RequestBody ProductDTOForm productDTOForm) {
+    public ResponseEntity<?> createProduct(@RequestBody ProductDTOForm productDTOForm) {
         try {
-            Product product = new Product();
-            BeanUtils.copyProperties(productDTOForm, product, "category_id");
-
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(productService.createProduct(product, productDTOForm.getCategoryId()));
+                    .body(productService.createProduct(productDTOForm));
 
         } catch (ProductAlreadyExistsException e) {
             return ResponseEntity.badRequest()
@@ -62,29 +85,14 @@ public class ProductController {
         }
     }
 
-    @PostMapping("{productId}/comments/user/{userId}")
-    public ResponseEntity<?> addAssessment(
-            @RequestBody Assessment assessment,
-            @PathVariable Long productId,
-            @PathVariable Long userId) {
-
-        try {
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(productService.addAssessment(assessment, productId, userId));
-
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.badRequest()
-                    .body(e.getMessage());
-        }
-    }
-
-    @PatchMapping("/{productId}/category/{categoryId}")
+    @PatchMapping("/{productId}/category/{categoryId}/stores/{storeId}")
     public ResponseEntity<?> setCategoryInProduct(
             @PathVariable Long productId,
-            @PathVariable Long categoryId) {
-
+            @PathVariable Long categoryId,
+            @PathVariable Long storeId
+    ) {
         try {
-            productService.setCategoryInProduct(productId, categoryId);
+            productService.setCategoryInProduct(productId, categoryId, storeId);
             return ResponseEntity.ok().build();
 
         } catch (EntityNotFoundException e) {
@@ -93,37 +101,32 @@ public class ProductController {
         }
     }
 
-    @PatchMapping("/{productId}/active-promotion")
-    public void setActivePromotion(@PathVariable Long productId) {
-        productService.setActivePromotion(productId);
+    @PatchMapping("/{productId}/active-promotion/stores/{storeId}")
+    public void setActivePromotion(
+            @PathVariable Long productId,
+            @PathVariable Long storeId
+    ) {
+        productService.setActivePromotion(productId, storeId);
     }
 
-    @PatchMapping("/{productId}/active-product")
-    public void setActiveProduct(@PathVariable Long productId) {
-        productService.setActiveProduct(productId);
+    @PatchMapping("/{productId}/active-product/stores/{storeId}")
+    public void setActiveProduct(
+            @PathVariable Long productId,
+            @PathVariable Long storeId
+    ) {
+        productService.setActiveProduct(productId, storeId);
     }
 
     @PutMapping("/{productId}")
-    public ResponseEntity<?> update(
+    public ResponseEntity<ProductDTOView> updateProduct(
             @PathVariable Long productId,
-            @RequestBody Product product) {
+            @RequestBody ProductDTOForm productDTOForm
+    ) {
+        ProductDTOView productDTOView = new ProductDTOView();
+        Product productUpdated = productService.updateProduct(productId, productDTOForm);
+        BeanUtils.copyProperties(productUpdated, productDTOView);
 
-        try {
-            Optional<Product> currentProduct = productRepository.findById(productId);
-
-            if (currentProduct.isPresent()) {
-                BeanUtils.copyProperties(product, currentProduct, "id");
-
-                productRepository.save(currentProduct.get());
-                return ResponseEntity.ok(currentProduct.get());
-            }
-
-            return ResponseEntity.notFound().build();
-
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.badRequest()
-                    .body(e.getMessage());
-        }
+        return new ResponseEntity<>(productDTOView, HttpStatus.OK);
     }
 
     @DeleteMapping("/{productId}")

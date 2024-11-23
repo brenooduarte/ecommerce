@@ -1,8 +1,12 @@
 package com.ecommerce.domain.service;
 
 import com.ecommerce.domain.dto.form.AddressDTOForm;
-import com.ecommerce.domain.models.*;
-import com.ecommerce.domain.repository.*;
+import com.ecommerce.domain.models.Address;
+import com.ecommerce.domain.models.User;
+import com.ecommerce.domain.models.UserAddress;
+import com.ecommerce.domain.repository.AddressRepository;
+import com.ecommerce.domain.repository.UserAddressRepository;
+import com.ecommerce.domain.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,39 +19,18 @@ public class AddressService {
     private AddressRepository addressRepository;
 
     @Autowired
-    private CityRepository cityRepository;
-
-    @Autowired
-    private StateRepository stateRepository;
-
-    @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private UserAddressRepository userAddressRepository;
 
     public void createAddress(AddressDTOForm addressDTOForm, Long userId) {
-
-        State state = stateRepository.findByName(addressDTOForm.getStateName());
-
-        if (state == null) {
-            state = new State(addressDTOForm.getStateName());
-            stateRepository.save(state);
-        }
-
-        City city = cityRepository.findByNameAndState(addressDTOForm.getStateName(), state);
-
-        if (city == null) {
-            city = new City(addressDTOForm.getCityName(), state);
-            cityRepository.save(city);
-        }
-
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         Address address = new Address();
         BeanUtils.copyProperties(addressDTOForm, address, "stateName", "cityName");
-        address.setCity(city);
+
         addressRepository.save(address);
 
         UserAddress userAddress = new UserAddress(user, address);
@@ -64,22 +47,9 @@ public class AddressService {
 
         BeanUtils.copyProperties(addressDTOForm, address, "stateName", "cityName");
 
-        State state = stateRepository.findByName(addressDTOForm.getStateName());
-
-        if (state == null) {
-            state = new State(addressDTOForm.getStateName());
-            stateRepository.save(state);
-        }
-
-        City city = cityRepository.findByNameAndState(addressDTOForm.getStateName(), state);
-
-        if (city == null) {
-            city = new City(addressDTOForm.getCityName(), state);
-            cityRepository.save(city);
-        }
-
-        address.setCity(city);
         addressRepository.save(address);
     }
 
+    public void deleteById(Long id) {
+    }
 }

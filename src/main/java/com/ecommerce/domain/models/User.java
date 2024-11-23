@@ -23,18 +23,15 @@ public class User {
     @Column
     private String password;
 
-    @OneToMany
-    @JoinColumn(name = "user_id")
-    private List<Assessment> assessments;
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserAddress> address;
+
+    @ManyToOne
+    @JoinColumn(name = "store_id", nullable = false)
+    private Store store;
 
     public void addAddress(UserAddress userAddress) {
         this.address.add(userAddress);
     }
 
-    public void addAssessment(Assessment assessment) {
-        this.assessments.add(assessment);
-    }
 }

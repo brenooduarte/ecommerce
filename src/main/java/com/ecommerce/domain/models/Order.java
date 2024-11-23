@@ -49,6 +49,10 @@ public class Order {
     @Column(name = "status_order", nullable = false)
     private StatusOrder statusOrder;
 
+    @ManyToOne
+    @JoinColumn(name = "store_id", nullable = false)
+    private Store store;
+
     public Order(BigDecimal subtotal, BigDecimal freightCharge, BigDecimal totalAmount) {
         this.subtotal = subtotal;
         this.freightCharge = freightCharge;
@@ -56,4 +60,6 @@ public class Order {
         this.creationDate = new Date();
         this.statusOrder = StatusOrder.CREATED;
     }
+
+    public Order() {}
 }

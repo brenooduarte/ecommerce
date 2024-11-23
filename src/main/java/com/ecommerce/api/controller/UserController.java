@@ -5,7 +5,6 @@ import com.ecommerce.domain.dto.view.UserDTOView;
 import com.ecommerce.domain.exceptions.EntityInUseException;
 import com.ecommerce.domain.exceptions.UserAlreadyExistsException;
 import com.ecommerce.domain.models.User;
-import com.ecommerce.domain.repository.UserRepository;
 import com.ecommerce.domain.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
@@ -23,33 +22,16 @@ import java.util.List;
 public class UserController {
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private UserService userService;
-
-    @GetMapping
-    public ResponseEntity<List<UserDTOView>> list() {
-//        return new ResponseEntity<List<User>>(userRepository.findAll(), HttpStatus.OK);
-        //TODO resolver se irá existir um get all users e qual a intenção disso
-    	return null;
-    }
+    UserService userService;
 
     @GetMapping("/{userId}")
     public ResponseEntity<UserDTOView> search(@PathVariable Long userId) {
     	UserDTOView userDTOView = userService.getById(userId);
         return ResponseEntity.ok(userDTOView);
     }
-    
-    @GetMapping("/active")
-    public ResponseEntity<List<UserDTOView>> listAllActive() {
-//        return new ResponseEntity<List<UserDTOView>>(userService.listAllActive(), HttpStatus.OK);
-        //TODO resolver se irá existir um get all users e qual a intenção disso
-    	return null;
-    }
 
     @PostMapping
-    public ResponseEntity<?> add(@RequestBody UserDTOForm userDTO) throws UserAlreadyExistsException {
+    public ResponseEntity<?> createUser(@RequestBody UserDTOForm userDTO) throws UserAlreadyExistsException {
         try {
             userService.createUser(userDTO);
 
@@ -62,7 +44,7 @@ public class UserController {
     }
 
 	@PutMapping("/{userId}")
-	public ResponseEntity<UserDTOView> update(@PathVariable Long userId, @RequestBody UserDTOForm userDTOForm) {
+	public ResponseEntity<UserDTOView> updateUser(@PathVariable Long userId, @RequestBody UserDTOForm userDTOForm) {
 
 		User user = userService.updateUser(userId, userDTOForm);
 
@@ -73,7 +55,7 @@ public class UserController {
 	}
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<?> remove(@PathVariable Long userId) {
+    public ResponseEntity<?> deleteUserById(@PathVariable Long userId) {
         try {
             userService.deleteUserById(userId);
             return ResponseEntity.noContent().build();

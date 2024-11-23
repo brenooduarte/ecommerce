@@ -27,15 +27,14 @@ public class Address {
     @Column
     private String neighborhood;
 
+    @Column(name = "city_name")
+    private String city;
+
+    @Column(name = "state_name")
+    private String state;
+
     @ManyToOne
-    @JoinColumn(name = "city_id")
-    private City city;
-
-    public Address(City city) {
-        this.city = city;
-    }
-
-    public Address() {
-    }
+    @JoinColumn(name = "store_id", nullable = false)
+    private Store store;
 
 }

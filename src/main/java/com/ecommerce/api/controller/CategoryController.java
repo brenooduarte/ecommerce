@@ -2,7 +2,6 @@ package com.ecommerce.api.controller;
 
 import com.ecommerce.domain.dto.form.CategoryDTOForm;
 import com.ecommerce.domain.models.Product;
-import com.ecommerce.domain.repository.CategoryRepository;
 import com.ecommerce.domain.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +14,7 @@ import java.util.List;
 public class CategoryController {
 
     @Autowired
-    private CategoryRepository categoryRepository;
-
-    @Autowired
-    private CategoryService categoryService;
+    CategoryService categoryService;
 
     @GetMapping("/{categoryId}")
     public ResponseEntity<List<Product>> listAllProductsByCategory(@PathVariable Long categoryId) {

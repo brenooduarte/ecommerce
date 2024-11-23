@@ -1,23 +1,22 @@
 package com.ecommerce.domain.service;
 
+import com.ecommerce.domain.dto.form.ProductDTOForm;
 import com.ecommerce.domain.dto.view.ProductDTOView;
+import com.ecommerce.domain.dto.view.SearchedProductsDTOView;
 import com.ecommerce.domain.exceptions.ProductAlreadyExistsException;
-import com.ecommerce.domain.models.Assessment;
 import com.ecommerce.domain.models.Category;
 import com.ecommerce.domain.models.Product;
-import com.ecommerce.domain.models.User;
-import com.ecommerce.domain.repository.AssessmentRepository;
 import com.ecommerce.domain.repository.CategoryRepository;
 import com.ecommerce.domain.repository.ProductRepository;
 import com.ecommerce.domain.repository.UserRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -26,21 +25,14 @@ public class ProductService {
 	private ProductRepository productRepository;
 
 	@Autowired
-	private AssessmentRepository assessmentRepository;
-
-	@Autowired
-	private UserRepository userRepository;
-
-	@Autowired
 	private CategoryRepository categoryRepository;
 
-	public Product getById(long id) {
-		Optional<Product> userOptional = productRepository.findById(id);
-		return userOptional.orElse(null);
+	public Optional<Product> findByProductId(Long productId, Long storeId) {
+		return productRepository.findByProductId(productId, storeId);
 	}
 
-	public List<ProductDTOView> listAllActive() {
-		List<Product> data = productRepository.listAllActive();
+	public List<ProductDTOView> findAllProducts(Integer page, Integer size, Long storeId) {
+		List<Product> data = productRepository.findAllProducts(page, size, storeId);
 		List<ProductDTOView> listView = new ArrayList<>();
 		for (Product product : data) {
 			ProductDTOView productView = new ProductDTOView();
@@ -50,7 +42,36 @@ public class ProductService {
 		return listView;
 	}
 
-	public Product createProduct(Product product, Long categoryId) throws ProductAlreadyExistsException {
+	public SearchedProductsDTOView findAllProductsWithFilters(
+			Integer page,
+			Integer size,
+			Long storeId,
+			String productName,
+			String brand,
+			String priceMin,
+			String priceMax
+	) {
+		SearchedProductsDTOView searchedProducts = (SearchedProductsDTOView) productRepository.findAllProductsWithFilters(
+				page, size, storeId, productName, brand, priceMin, priceMax
+		);
+
+		// Map entities to DTOs if necessary
+		Set<ProductDTOView> productDTOViews = searchedProducts.getProductDTOViews().stream()
+				.map(product -> {
+					ProductDTOView productView = new ProductDTOView();
+					BeanUtils.copyProperties(product, productView);
+					return productView;
+				})
+				.collect(Collectors.toSet());
+
+		searchedProducts.setProductDTOViews(productDTOViews);
+		return searchedProducts;
+	}
+
+	public Product createProduct(ProductDTOForm productDTOForm) throws ProductAlreadyExistsException {
+
+		Product product = new Product();
+		BeanUtils.copyProperties(productDTOForm, product, "category_id");
 
 		Product productFound = productRepository.findByName(product.getName());
 
@@ -58,7 +79,7 @@ public class ProductService {
 			throw new ProductAlreadyExistsException("Product already exists");
 		}
 
-		Category category = categoryRepository.findById(categoryId)
+		Category category = categoryRepository.findById(productDTOForm.getCategoryId())
 				.orElseThrow(() -> new NoSuchElementException("Category not found"));
 
 		category.addProduct(product);
@@ -66,53 +87,38 @@ public class ProductService {
 		return productRepository.save(product);
 	}
 
-	public Product updateProduct(Product newProduct) {
-		Product product = productRepository.findById(newProduct.getId())
-				.orElseThrow(() -> new NoSuchElementException("Product not found"));
-		product.setName(newProduct.getName());
-		product.setPrice(newProduct.getPrice());
+	public Product updateProduct(Long productId, ProductDTOForm productDTOForm) {
+		Optional<Product> productFound = productRepository.findByProductId(productId, productDTOForm.getStoreId());
 
-		return productRepository.save(product);
+		if (productFound.isPresent()) {
+			BeanUtils.copyProperties(productDTOForm, productFound.get());
+			return productRepository.save(productFound.get());
+		}
+
+		return new Product();
 	}
 
 	public void deleteProductById(long id) {
 		productRepository.deleteById(id);
 	}
 
-    public Assessment addAssessment(Assessment assessment, Long productId, Long userId) {
-		Product product = productRepository.findById(productId)
-				.orElseThrow(() -> new NoSuchElementException("Product not found"));
-
-		User user = userRepository.findById(userId)
-				.orElseThrow(() -> new NoSuchElementException("User not found"));
-
-		user.addAssessment(assessment);
-		product.addAssessment(assessment);
-		assessmentRepository.save(assessment);
-
-		return assessment;
-    }
-
-	public void setActivePromotion(Long productId) {
-		Product product = productRepository.findById(productId)
-				.orElseThrow(() -> new NoSuchElementException("Product not found"));
+	public void setActivePromotion(Long productId, Long storeId) {
+		Product product = productRepository.findByProductId(productId, storeId).get();
 
 		product.setPromotion(!product.isPromotion());
 	}
 
-	public void setActiveProduct(Long productId) {
-		Product product = productRepository.findById(productId)
-				.orElseThrow(() -> new NoSuchElementException("Product not found"));
+	public void setActiveProduct(Long productId, Long storeId) {
+		Product product = productRepository.findByProductId(productId, storeId).get();
 
 		product.setPromotion(!product.isStatus());
 	}
 
-	public void setCategoryInProduct(Long productId, Long categoryId) {
+	public void setCategoryInProduct(Long productId, Long categoryId, Long storeId) {
 		Category category = categoryRepository.findById(categoryId)
 				.orElseThrow(() -> new NoSuchElementException("Category not found"));
 
-		Product product = productRepository.findById(productId)
-				.orElseThrow(() -> new NoSuchElementException("Product not found"));
+		Product product = productRepository.findByProductId(productId, storeId).get();
 
 		category.addProduct(product);
 	}

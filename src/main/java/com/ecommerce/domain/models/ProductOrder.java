@@ -39,4 +39,6 @@ public class ProductOrder {
             this.promotionPrice = product.getPromotionPrice();
         }
     }
+
+    public ProductOrder() {}
 }

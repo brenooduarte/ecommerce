@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Entity
 @Data
@@ -20,13 +19,16 @@ public class Product {
     private String name;
 
     @Column(nullable = false)
+    private String brand;
+
+    @Column(nullable = false)
     private BigDecimal price;
 
     @Column(nullable = false)
     private String description;
 
-    @Column
-    private String image;
+    @Column(name = "image_url")
+    private String imageUrl;
 
     @Column
     private boolean highlight;
@@ -40,13 +42,12 @@ public class Product {
     @Column
     private boolean status;
 
-    @OneToMany
-    @JoinColumn(name = "product_id")
-    private List<Assessment> assessments;
+    @ManyToOne
+    @JoinColumn(name = "store_id", nullable = false)
+    private Store store;
 
-    public void addAssessment(Assessment assessment) {
-        this.assessments.add(assessment);
-    }
+    @Column(length = 70)
+    private String related;
 
     @PrePersist
     public void prePersist() {

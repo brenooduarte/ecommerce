@@ -4,8 +4,10 @@ import java.util.List;
 
 import com.ecommerce.domain.models.UserAddress;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class UserDTOForm {
 
@@ -18,6 +20,10 @@ public class UserDTOForm {
 
 	@NotBlank
     private String password;
+
+	@NotNull
+	@JsonProperty("store_id")
+	private Long storeId;
 
     private List<UserAddress> address;
 
